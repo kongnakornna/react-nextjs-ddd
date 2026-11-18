@@ -2,7 +2,7 @@
 
 **React Clean Architecture + Next.js App Router + Tabler UI (SCSS) + Tailwind CSS + shadcn/ui**
 
-Ported from [react-nextjs-ddd](https://github.com/kongnakorn/react-nextjs-ddd) (Angular 21 + Tabler UI) to React 18 + Next.js 14 with strict Clean Architecture boundaries.
+ (Angular 21 + Tabler UI) to React 18 + Next.js 14 with strict Clean Architecture boundaries.
 
 ---
 
