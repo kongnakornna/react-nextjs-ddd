@@ -1,4 +1,4 @@
-# ICMon React + Next.js — IoT Monitoring Web Application
+# Demo React + Next.js — IoT Monitoring Web Application
 
 **React Clean Architecture + Next.js App Router + Tabler UI (SCSS) + Tailwind CSS + shadcn/ui**
 
