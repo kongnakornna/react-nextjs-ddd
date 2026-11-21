@@ -30,6 +30,7 @@
       "@core/*":   ["./src/core/*"],
       "@entities/*":   ["./src/entities/*"],
       "@di/*": ["./di/*"],
+      "@drizzle/*": ["./drizzle/*"],
       "@features/*": ["./src/features/*"],
       "@env/*":    ["./src/environments/*"]
     }

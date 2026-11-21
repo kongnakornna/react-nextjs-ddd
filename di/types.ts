@@ -16,7 +16,7 @@ import {
   ISignInApiController,
   ISignInApiPresenter,
   ISignInApiUseCase,
-} from '@/src/interface-adapters/api/auth/sign-in/contract';
+} from '@/src/interface-adapters/api/v1/authentication/login/contract';
 import {
   ISignUpApiController,
   ISignUpApiPresenter,

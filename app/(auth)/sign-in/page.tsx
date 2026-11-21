@@ -1,9 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useI18n } from '@/src/core/services/i18n.service';
+
+import Link from 'next/link';
+
+import { useState } from 'react';
+
+import { useRouter } from 'next/navigation';
 
 export default function SignInPage() {
   const router = useRouter();
