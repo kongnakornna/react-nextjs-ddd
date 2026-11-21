@@ -4,6 +4,9 @@ import { fontFamily } from 'tailwindcss/defaultTheme';
 const config = {
   darkMode: 'class',
   content: ['./app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}'],
+  // Bootstrap/Tabler `.collapse` (navbar menu) would be overridden by Tailwind's
+  // `collapse` utility (visibility: collapse), which loads after Tabler.
+  blocklist: ['collapse'],
   prefix: '',
   theme: {
     container: {

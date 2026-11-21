@@ -1,7 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
+/**
+ * Theme / layout settings — port of icmonangular `core/services/layout.service.ts`.
+ *
+ * One module-level store shared by every component (header dark-mode toggle,
+ * layout-mode dropdown, Theme Settings off-canvas), so they never drift apart.
+ * Persisted per key as `tabler-<key>` in localStorage; app/layout.tsx applies the
+ * same keys in an inline script before hydration to avoid a flash.
+ */
 export interface ThemeSettings {
   theme: 'light' | 'dark' | 'system';
   themeBase: string;
@@ -11,8 +19,10 @@ export interface ThemeSettings {
   layout: 'fluid' | 'boxed' | 'boxed-2';
 }
 
+export type ThemeKey = keyof ThemeSettings;
+
 const STORAGE_PREFIX = 'tabler-';
-const DEFAULTS: ThemeSettings = {
+export const THEME_DEFAULTS: ThemeSettings = {
   theme: 'dark',
   themeBase: 'gray',
   themeFont: 'sans-serif',
@@ -21,41 +31,123 @@ const DEFAULTS: ThemeSettings = {
   layout: 'fluid',
 };
 
-export function useTheme() {
-  const [settings, setSettings] = useState<ThemeSettings>(DEFAULTS);
-  const [isLoaded, setIsLoaded] = useState(false);
+// ── store ────────────────────────────────────────────────────────────────
+let state: ThemeSettings = THEME_DEFAULTS;
+let loaded = false;
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
-    const loaded = { ...DEFAULTS };
-    for (const key of Object.keys(DEFAULTS) as (keyof ThemeSettings)[]) {
+function emit() {
+  listeners.forEach((l) => l());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+const getSnapshot = () => state;
+const getServerSnapshot = () => THEME_DEFAULTS;
+const getLoaded = () => loaded;
+const getServerLoaded = () => false;
+
+function readStorage(): ThemeSettings {
+  const next = { ...THEME_DEFAULTS };
+  try {
+    for (const key of Object.keys(THEME_DEFAULTS) as ThemeKey[]) {
       const stored = localStorage.getItem(STORAGE_PREFIX + key);
-      if (stored) {
-        (loaded as Record<string, string>)[key] = stored;
-      }
+      if (stored) (next as Record<string, string>)[key] = stored;
     }
-    setSettings(loaded);
-    applySettings(loaded);
-    setIsLoaded(true);
+  } catch {
+    // storage blocked — keep defaults
+  }
+  return next;
+}
+
+function ensureLoaded() {
+  if (loaded || typeof window === 'undefined') return;
+  state = readStorage();
+  loaded = true;
+  applySettings(state);
+  emit();
+}
+
+function setState(next: ThemeSettings) {
+  state = next;
+  applySettings(state);
+  emit();
+}
+
+// ── public hook ──────────────────────────────────────────────────────────
+export function useTheme() {
+  const settings = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const isLoaded = useSyncExternalStore(subscribe, getLoaded, getServerLoaded);
+
+  // Read localStorage after mount — the first client render matches the server.
+  useEffect(() => {
+    ensureLoaded();
   }, []);
 
-  const update = useCallback((key: keyof ThemeSettings, value: string) => {
-    setSettings(prev => {
-      const newSettings = { ...prev, [key]: value };
+  const update = useCallback((key: ThemeKey, value: string) => {
+    try {
       localStorage.setItem(STORAGE_PREFIX + key, value);
-      applySettings(newSettings);
-      return newSettings;
-    });
+    } catch {
+      // ignore
+    }
+    setState({ ...state, [key]: value } as ThemeSettings);
   }, []);
 
   const reset = useCallback(() => {
-    setSettings(DEFAULTS);
-    for (const key of Object.keys(DEFAULTS)) {
-      localStorage.removeItem(STORAGE_PREFIX + key);
+    try {
+      for (const key of Object.keys(THEME_DEFAULTS)) {
+        localStorage.removeItem(STORAGE_PREFIX + key);
+      }
+    } catch {
+      // ignore
     }
-    applySettings(DEFAULTS);
+    setState(THEME_DEFAULTS);
   }, []);
 
-  return { settings, update, reset, isLoaded };
+  const toggleTheme = useCallback(() => {
+    update('theme', resolveTheme(state.theme) === 'dark' ? 'light' : 'dark');
+  }, [update]);
+
+  return {
+    settings,
+    isLoaded,
+    isDarkMode: resolveTheme(settings.theme) === 'dark',
+    update,
+    reset,
+    toggleTheme,
+  };
+}
+
+function resolveTheme(theme: ThemeSettings['theme']): 'light' | 'dark' {
+  if (theme !== 'system') return theme;
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return 'dark';
+}
+
+/** Toggle browser full screen (port of HeaderComponent.openFullscreen). */
+export function toggleFullscreen(): void {
+  if (typeof document === 'undefined') return;
+  const el = document.documentElement as HTMLElement & {
+    webkitRequestFullscreen?: () => void;
+    msRequestFullscreen?: () => void;
+    mozRequestFullScreen?: () => void;
+  };
+  if (document.fullscreenElement) {
+    void document.exitFullscreen();
+  } else if (el.requestFullscreen) {
+    void el.requestFullscreen();
+  } else if (el.webkitRequestFullscreen) {
+    el.webkitRequestFullscreen();
+  } else if (el.msRequestFullscreen) {
+    el.msRequestFullscreen();
+  } else if (el.mozRequestFullScreen) {
+    el.mozRequestFullScreen();
+  }
 }
 
 function applySettings(s: ThemeSettings) {
@@ -63,7 +155,7 @@ function applySettings(s: ThemeSettings) {
 
   const el = document.documentElement;
 
-  const resolved = s.theme === 'system' ? 'dark' : s.theme;
+  const resolved = resolveTheme(s.theme);
   el.setAttribute('data-bs-theme', resolved);
   el.setAttribute('data-bs-theme-base', s.themeBase);
   el.setAttribute('data-bs-theme-font', s.themeFont);
@@ -71,15 +163,12 @@ function applySettings(s: ThemeSettings) {
   el.setAttribute('data-bs-theme-radius', s.themeRadius);
 
   // Sync dark class for Tailwind
-  if (resolved === 'dark') {
-    el.classList.add('dark');
-  } else {
-    el.classList.remove('dark');
-  }
+  el.classList.toggle('dark', resolved === 'dark');
 
   el.classList.remove('theme-slate', 'theme-gray', 'theme-zinc', 'theme-neutral', 'theme-stone');
   el.classList.add('theme-' + s.themeBase);
 
+  // Layout mode — Tabler reads .layout-boxed on <body>
   const body = document.body;
   body.classList.remove('layout-fluid', 'layout-boxed', 'layout-boxed-2');
   if (s.layout === 'boxed' || s.layout === 'boxed-2') {

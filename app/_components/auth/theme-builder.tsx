@@ -28,10 +28,19 @@ const FONTS: { key: string; label: string }[] = [
 const BASES = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
 const RADII = ['0', '0.5', '1', '1.5', '2'];
 
+/** Dispatch on `window` to open the panel from elsewhere (e.g. the header settings icon). */
+export const OPEN_THEME_SETTINGS_EVENT = 'theme-settings:open';
+
 export function ThemeBuilder() {
   const { settings, update, reset } = useTheme();
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener(OPEN_THEME_SETTINGS_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_THEME_SETTINGS_EVENT, onOpen);
+  }, []);
 
   useEffect(() => {
     if (!open) return;

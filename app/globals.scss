@@ -69,3 +69,93 @@
     @apply bg-muted/80 dark:bg-muted/20;
   }
 }
+
+// ── Tabler layout (port of icmonangular layouts/header/header.component.scss) ──
+
+// Level-2 menu with children: opens to the right on hover, or on tap (.open).
+.dropdown-submenu {
+  position: relative;
+
+  > .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+  }
+
+  &:hover > .dropdown-menu,
+  &.open > .dropdown-menu {
+    display: block;
+  }
+
+  > .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 1rem;
+
+    &::after {
+      content: '';
+      display: inline-block;
+      width: 0;
+      height: 0;
+      margin-left: auto;
+      vertical-align: 0;
+      border-top: 0.3em solid transparent;
+      border-right: 0;
+      border-bottom: 0.3em solid transparent;
+      border-left: 0.3em solid currentcolor;
+    }
+  }
+
+  &:hover > .dropdown-item {
+    background-color: var(--tblr-dropdown-link-hover-bg);
+  }
+}
+
+// On small screens the horizontal menu stacks; open submenus below, not beside.
+@media (max-width: 767.98px) {
+  .dropdown-submenu > .dropdown-menu {
+    position: static;
+    left: auto;
+    margin-left: 1rem;
+    box-shadow: none;
+  }
+}
+
+.dropdown-menu-card {
+  .list-group-hoverable .list-group-item-actions {
+    opacity: 1;
+    color: var(--tblr-body-color);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--tblr-primary);
+    }
+  }
+
+  .list-group-item.active .list-group-item-actions {
+    color: #fff;
+  }
+}
+
+// Profile name/role in the header — limit width so text-truncate works.
+.user-info {
+  max-width: 14rem;
+  min-width: 0;
+
+  .user-name,
+  .user-role {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+.skip-link:focus {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 1100;
+  padding: 0.5rem 1rem;
+  background: var(--tblr-bg-surface);
+  border-radius: var(--tblr-border-radius);
+}
