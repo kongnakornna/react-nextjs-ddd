@@ -1,4 +1,4 @@
-# API Flow
+## API Flow
 
 ทุก request จากหน้าเว็บ (`localhost:1003`) วิ่งเข้า Next.js ที่ `/api/...` ก่อน แล้ว Next.js ตัดสินว่าจะตอบเองด้วย route handler หรือ proxy ต่อไปที่ backend FastAPI (`fastapiiot`, `localhost:8000`)
 
