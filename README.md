@@ -44,7 +44,7 @@
 └─────────────────────────┬────────────────────────────────┘
                           │
 ┌─────────────────────────┴────────────────────────────────┐
-│  EXTERNAL — Go Backend (port 5000), SQLite/Turso, etc.   │
+│  EXTERNAL — Go Backend (port 8000), SQLite/Turso, etc.   │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -131,7 +131,7 @@ src/features/
 
 ### 1.5 API Proxy Strategy
 
-Angular ใช้ `proxy.conf.json` proxy `/api` → Go backend (port 5000)
+Angular ใช้ `proxy.conf.json` proxy `/api` → Go backend (port 8000)
 React+Next.js ใช้ 2 วิธี:
 
 **วิธีที่ 1: Next.js Rewrites (proxy ไป Go backend ภายนอก)**
@@ -140,8 +140,8 @@ React+Next.js ใช้ 2 วิธี:
 const nextConfig = {
   async rewrites() {
     return [
-      { source: '/api/:path*', destination: 'http://localhost:5000/api/:path*' },
-      { source: '/ws', destination: 'http://localhost:5000/ws' },
+      { source: '/api/:path*', destination: 'http://localhost:8000/api/:path*' },
+      { source: '/ws', destination: 'http://localhost:8000/ws' },
     ];
   },
 };
@@ -462,7 +462,7 @@ icmon-react-nextjs/
 ```
 ┌──────────┐    ┌──────────┐    ┌───────────┐    ┌──────────┐    ┌──────────┐
 │  Page     │───▶│Use Case  │───▶│Repository │───▶│DataSource│───▶│Go Backend│
-│Component  │    │          │    │Interface  │    │(fetch)   │    │(port5000)│
+│Component  │    │          │    │Interface  │    │(fetch)   │    │(port8000)│
 └──────────┘    └──────────┘    └─────┬─────┘    └──────────┘    └──────────┘
                                       │
                                 ┌─────▼──────┐
@@ -545,7 +545,7 @@ presentation/pages/       ← React components, calls use cases via DI
 
 - **Node.js** >= 22
 - **npm** >= 10
-- **Go Backend** running on port 5000 (optional — for full API)
+- **Go Backend** running on port 8000 (optional — for full API)
 
 ### 4.2 Install
 
@@ -582,10 +582,10 @@ cp .env .env.local
 `.env` (default):
 ```env
 # --- API Proxy (like icmonangular proxy.conf.json) ---
-API_TARGET_URL=http://localhost:5000
-NEXT_PUBLIC_API_TARGET_URL=http://localhost:5000
+API_TARGET_URL=http://localhost:8000
+NEXT_PUBLIC_API_TARGET_URL=http://localhost:8000
 NEXT_PUBLIC_USE_PROXY=true
-NEXT_PUBLIC_API_PRIMARY=http://localhost:5000
+NEXT_PUBLIC_API_PRIMARY=http://localhost:8000
 
 PERSISTENCE=in-file
 DATABASE_URL=file:sqlite.local.db
@@ -625,7 +625,7 @@ Proxy ถูกกำหนดค่าใน `next.config.mjs` ใช้ `API_T
 
 ```js
 // next.config.mjs
-const API_TARGET = process.env.API_TARGET_URL || 'http://localhost:5000';
+const API_TARGET = process.env.API_TARGET_URL || 'http://localhost:8000';
 
 const nextConfig = {
   output: 'standalone',
@@ -874,18 +874,18 @@ services:
 
 echo "[Docker] Checking backend connectivity..."
 
-TARGET="http://host.docker.internal:5000"
-FALLBACK="http://localhost:5000"
+TARGET="http://host.docker.internal:8000"
+FALLBACK="http://localhost:8000"
 
-if nc -z -w2 host.docker.internal 5000 2>/dev/null; then
-  echo "[Docker] host.docker.internal:5000 is reachable"
-  TARGET="http://host.docker.internal:5000"
-elif nc -z -w2 localhost 5000 2>/dev/null; then
-  echo "[Docker] localhost:5000 is reachable"
-  TARGET="http://localhost:5000"
+if nc -z -w2 host.docker.internal 8000 2>/dev/null; then
+  echo "[Docker] host.docker.internal:8000 is reachable"
+  TARGET="http://host.docker.internal:8000"
+elif nc -z -w2 localhost 8000 2>/dev/null; then
+  echo "[Docker] localhost:8000 is reachable"
+  TARGET="http://localhost:8000"
 else
-  echo "[Docker] No backend reachable, defaulting to host.docker.internal:5000"
-  TARGET="http://host.docker.internal:5000"
+  echo "[Docker] No backend reachable, defaulting to host.docker.internal:8000"
+  TARGET="http://host.docker.internal:8000"
 fi
 
 export API_TARGET_URL="${TARGET}"
@@ -933,8 +933,8 @@ docker compose down
 
 ```bash
 # .env (for Docker)
-API_TARGET_URL=http://host.docker.internal:5000
-NEXT_PUBLIC_API_TARGET_URL=http://host.docker.internal:5000
+API_TARGET_URL=http://host.docker.internal:8000
+NEXT_PUBLIC_API_TARGET_URL=http://host.docker.internal:8000
 NEXT_PUBLIC_USE_PROXY=true
 PERSISTENCE=sqlite
 DATABASE_URL=file:sqlite.docker.db
@@ -990,7 +990,7 @@ DATABASE_AUTH_TOKEN=local-dev-placeholder
 | **Validation** | Zod |
 | **Testing** | Vitest (unit), Playwright (E2E) |
 | **i18n** | 10 languages (en, th, zh, ja, ko, vi, my, ms, km, lo) |
-| **Backend Proxy** | Next.js rewrites → Go (port 5000) |
+| **Backend Proxy** | Next.js rewrites → Go (port 8000) |
 | **Node** | >= 22 |
 
 ---
@@ -1002,8 +1002,8 @@ DATABASE_AUTH_TOKEN=local-dev-placeholder
 ```json
 // proxy.conf.json
 {
-  "/api": { "target": "http://localhost:5000", "secure": false, "changeOrigin": true },
-  "/ws":  { "target": "http://localhost:5000", "secure": false, "changeOrigin": true, "ws": true }
+  "/api": { "target": "http://localhost:8000", "secure": false, "changeOrigin": true },
+  "/ws":  { "target": "http://localhost:8000", "secure": false, "changeOrigin": true, "ws": true }
 }
 ```
 
@@ -1011,7 +1011,7 @@ DATABASE_AUTH_TOKEN=local-dev-placeholder
 
 **วิธีที่ 1: Next.js Rewrites** (ใน `next.config.mjs` — ใช้ environment variable)
 ```js
-const API_TARGET = process.env.API_TARGET_URL || 'http://localhost:5000';
+const API_TARGET = process.env.API_TARGET_URL || 'http://localhost:8000';
 
 async rewrites() {
   return [
@@ -1023,21 +1023,21 @@ async rewrites() {
 
 **Environment Variables:**
 ```env
-API_TARGET_URL=http://localhost:5000
-NEXT_PUBLIC_API_TARGET_URL=http://localhost:5000
+API_TARGET_URL=http://localhost:8000
+NEXT_PUBLIC_API_TARGET_URL=http://localhost:8000
 NEXT_PUBLIC_USE_PROXY=true
-NEXT_PUBLIC_API_PRIMARY=http://localhost:5000
+NEXT_PUBLIC_API_PRIMARY=http://localhost:8000
 ```
 
 **วิธีที่ 2: Server Actions + BFF** (ปัจจุบัน — ไม่ต้อง proxy)
 ```
-Browser → Next.js Server → Use Case → Repository → fetch('http://localhost:5000/api/...')
+Browser → Next.js Server → Use Case → Repository → fetch('http://localhost:8000/api/...')
 ```
 
 **วิธีที่ 3: nginx.conf** (Docker production)
 ```nginx
 location /api/ {
-    proxy_pass http://host.docker.internal:5000;
+    proxy_pass http://host.docker.internal:8000;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection 'upgrade';

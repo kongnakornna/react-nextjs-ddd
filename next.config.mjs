@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-const API_TARGET = process.env.API_TARGET_URL || 'http://localhost:5000';
+const API_TARGET = process.env.API_TARGET_URL || 'http://localhost:8000';
 
 const nextConfig = {
   output: 'standalone',

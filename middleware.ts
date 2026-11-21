@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { SESSION_COOKIE } from '@/config';
+import {
+  BACKEND_ACCESS_TOKEN_COOKIE,
+  BACKEND_REFRESH_TOKEN_COOKIE,
+  SESSION_COOKIE,
+} from '@/config';
 
 const PUBLIC_PATHS = ['/sign-in', '/sign-up', '/forgot-password'];
 
@@ -43,8 +47,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const sessionId = request.cookies.get(SESSION_COOKIE)?.value;
-  if (!sessionId) {
+  // Signed in via the FastAPI backend (access/refresh cookies) or the local
+  // Next session. The refresh cookie counts too: the access token lives only
+  // 15 min and can be renewed with PATCH /api/v1/authentication/refresh.
+  // Presence check only — the backend validates the token on every API call.
+  const hasBackendSession =
+    request.cookies.has(BACKEND_ACCESS_TOKEN_COOKIE) ||
+    request.cookies.has(BACKEND_REFRESH_TOKEN_COOKIE);
+  const hasLocalSession = request.cookies.has(SESSION_COOKIE);
+
+  if (!hasBackendSession && !hasLocalSession) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 

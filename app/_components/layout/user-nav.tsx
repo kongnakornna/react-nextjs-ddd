@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/app/_components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/app/_components/ui/avatar';
+import { signOutAction } from '@/app/(home)/actions/sign-out.action';
 
 export function UserNav() {
   return (
@@ -33,7 +34,9 @@ export function UserNav() {
           <Link href="/settings">Settings</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={() => signOutAction()}>
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

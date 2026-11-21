@@ -23,8 +23,8 @@ function getBaseUrl(): string {
  * fastapiiot envelope:
  *   success: { code, method, path, timestamp, details: { message, data } }
  *   error:   { code, ..., details: { message, data: { errors, errors_th, code? } } }
- * Some endpoints (e.g. login) return the schema body directly — unwrap only when
- * the envelope is present.
+ * Every endpoint seen so far (login included) uses the envelope; OpenAPI shows only
+ * the inner schema. Unwrap defensively — only when the envelope is present.
  */
 function unwrap(body: any): any {
   if (body && typeof body === 'object' && body.details && 'data' in body.details) {

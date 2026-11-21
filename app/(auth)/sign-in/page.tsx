@@ -1,6 +1,9 @@
 'use client';
 
 import { useI18n } from '@/src/core/services/i18n.service';
+import { AuthApiDataSource } from '@/src/features/auth/data/datasources/auth.api.datasource';
+
+const authApi = new AuthApiDataSource();
 
 import Link from 'next/link';
 
@@ -25,30 +28,20 @@ export default function SignInPage() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/auth/sign-in', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || result.status === 'failure') {
-        const status = response.status;
-        const msg = result.error || result.body?.error;
-        if (status === 401) {
-          setError(msg || t('login.invalidCredentials'));
-        } else if (status === 422) {
-          setError(msg || t('login.validationError'));
-        } else {
-          setError(msg || t('errors.unknown'));
-        }
-        return;
-      }
-
+      // POST /api/v1/authentication/login (form-urlencoded, grant_type=password)
+      // → Next proxy → FastAPI :8000. The backend sets HttpOnly
+      // access_token / refresh_token cookies that middleware.ts checks.
+      await authApi.login({ username, password });
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || t('errors.unknown'));
+    } catch (err: unknown) {
+      const { status, message } = err as Error & { status?: number };
+      if (status === 401) {
+        setError(message || t('login.invalidCredentials'));
+      } else if (status === 422) {
+        setError(message || t('login.validationError'));
+      } else {
+        setError(message || t('errors.unknown'));
+      }
     } finally {
       setLoading(false);
     }
