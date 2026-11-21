@@ -7,7 +7,7 @@
 
 เอกสารนี้อธิบายสถาปัตยกรรมของระบบ **IoT Monitoring Web Application** ที่พัฒนาด้วย **React 18 + Next.js 14** โดยใช้หลักการ **Domain-Driven Design (DDD)** และ **Clean Architecture**
 
-โปรเจกต์นี้เป็นการ migrate จาก Angular 21 มาเป็น React/Next.js โดยรักษาโครงสร้างแบบ Clean Architecture และเพิ่มประสิทธิภาพด้วย Server Components, Server Actions และ App Router ของ Next.js
+โปรเจกต์นี React/Next.js โดยรักษาโครงสร้างแบบ Clean Architecture และเพิ่มประสิทธิภาพด้วย Server Components, Server Actions และ App Router ของ Next.js
 
 ### วัตถุประสงค์
 
@@ -520,7 +520,7 @@ A: **ไม่ได้** — ต้องผ่าน Branch → PR → Review 
 | [README.md](../README.md) | ภาพรวมโปรเจกต์, Setup, คำสั่งพื้นฐาน |
 | [architecture-guide.md](./architecture-guide.md) | คู่มือการพัฒนาและบำรุงรักษา Clean Architecture |
 | [module-map.md](./module-map.md) | Module dependency map, สรุป Features ทั้งหมด |
-| [migration-report.md](./migration-report.md) | รายงาน migration จาก Angular 21 → React/Next.js |
+| [migration-report.md](./migration-report.md) | รายงาน migration React/Next.js |
 | [theme-guide.md](./theme-guide.md) | คู่มือ Tabler UI + Tailwind + Dark Mode |
 | [plan.md](./plan.md) | แผนการ migrate Features (Phase 0-8) |
 | [apiflow.md](./apiflow.md) | API Flow, Proxy Configuration, Authentication |
