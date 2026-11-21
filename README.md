@@ -1131,8 +1131,16 @@ mkdir -p src/features/{name}/presentation/pages
 
 ---
 
+![alt text](favicon.ico)
+
 ![alt text](login.png)
 
 ![alt text](iot.png)
 
 ![alt text](smarthome.png)
+
+![alt text](api-2.png)
+
+![alt text](api-3.png)
+
+![alt text](api-1.png)
