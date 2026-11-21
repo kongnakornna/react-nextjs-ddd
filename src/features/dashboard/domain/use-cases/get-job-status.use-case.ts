@@ -1,10 +1,10 @@
-import { IDashboardRepository } from '../repositories/dashboard.repository';
-import { JobStatusSummary } from '../entities/dashboard.entity';
+import type { JobStatusSummary } from '../entities/dashboard-stats.entity';
+import type { IDashboardRepository } from '../repositories/dashboard.repository';
 
 export class GetJobStatusUseCase {
   constructor(private repo: IDashboardRepository) {}
 
-  async execute(): Promise<JobStatusSummary> {
+  execute(): Promise<JobStatusSummary[]> {
     return this.repo.getJobStatus();
   }
 }

@@ -110,7 +110,9 @@
     "logsControlReport": "Báo cáo nhật ký điều khiển",
     "deviceReport": "Báo cáo thiết bị",
     "home": "home",
-    "apiHealth": "Sức khỏe API"
+    "apiHealth": "Sức khỏe API",
+    "iotMonitoring": "Giám sát IoT",
+    "iotDashboard": "Bảng điều khiển IoT"
   },
   "settings": {
     "title": "Cài đặt",
@@ -570,7 +572,9 @@
     "contactAdmin": "Liên hệ quản trị viên",
     "testCredentials": "Sử dụng admin / P@ssw0rd để kiểm tra hệ thống",
     "invalidCredentials": "Tên người dùng hoặc mật khẩu không hợp lệ",
-    "validationError": "Lỗi xác thực"
+    "validationError": "Lỗi xác thực",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "pleaseSignIn": "Vui lòng đăng nhập để tiếp tục."
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "Đã cập nhật",
       "swalUpdateFailed": "Cập nhật thất bại"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "Giám sát IoT",
+    "title": "Bảng điều khiển IoT",
+    "load": "Tải",
+    "welcome": "Tổng quan IoT",
+    "healthyRate": "Tỷ lệ bình thường",
+    "normal": "Bình thường",
+    "warning": "Cảnh báo",
+    "alarm": "Báo động",
+    "controlsOn": "Thiết bị điều khiển BẬT",
+    "groups": "Nhóm thiết bị",
+    "device": "Thiết bị",
+    "value": "Giá trị",
+    "status": "Trạng thái",
+    "noAlerts": "Không có cảnh báo"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "Bảng điều khiển",
+      "configuration": "Cấu hình",
+      "analysisChart": "Biểu đồ phân tích",
+      "alarmLog": "Nhật ký báo động",
+      "alarmConfiguration": "Cấu hình báo động",
+      "schedule": "Lịch trình",
+      "controlDevice": "Điều khiển thiết bị"
+    },
+    "devices": "thiết bị",
+    "noDeviceData": "Không có dữ liệu thiết bị",
+    "noDevice": "Không có thiết bị",
+    "settings": "Cài đặt",
+    "mainDoor": "Cửa chính",
+    "cardOpacity": "Độ mờ thẻ",
+    "screenBrightness": "Độ sáng màn hình",
+    "jsonPreview": "Xem trước JSON",
+    "reset": "Đặt lại",
+    "save": "Lưu",
+    "saving": "Đang lưu...",
+    "loading": "Đang tải bảng điều khiển...",
+    "refresh": "Làm mới",
+    "dragPoint": "kéo điểm",
+    "turnedOn": "Đã BẬT {name}",
+    "turnedOff": "Đã TẮT {name}",
+    "controlFailed": "Không điều khiển được {name}",
+    "saved": "Đã lưu",
+    "saveFailed": "Lưu thất bại",
+    "jsonCopied": "Đã sao chép JSON",
+    "copyFailed": "Sao chép thất bại"
+  },
+  "iotLayout": {
+    "overview": "Tổng quan",
+    "profile": "Hồ sơ",
+    "historyLog": "Nhật ký lịch sử",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "logoutConfirm": "Bạn có muốn đăng xuất không?",
+    "cancel": "Hủy",
+    "userMenu": "Mở menu người dùng"
   }
 }

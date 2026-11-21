@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 
+import { SessionKeeper } from '@/app/_components/auth/session-keeper';
 import { ThemeBuilder } from '@/app/_components/auth/theme-builder';
 import { useTheme } from '@/src/core/services/theme.service';
 import { IotDashboardFooter } from './iotdashboard-footer';
@@ -29,17 +30,20 @@ export function IotDashboardLayout({
   useTheme(); // apply saved theme / layout settings
 
   return (
-    <div className="page">
+    // Always 100% wide, even with the Theme Builder "Boxed" layout —
+    // see `.page-iot-fullwidth` in app/globals.scss.
+    <div className="page page-iot-fullwidth">
       <div className="page-wrapper">
         <IotDashboardHeader home={home} />
         <main className="page-body mt-0" id="content">
-          <div className="container-fluid px-2">{children}</div>
+          <div className="container-fluid px-0">{children}</div>
         </main>
         <IotDashboardFooter />
       </div>
       <div className="settings">
         <ThemeBuilder />
       </div>
+      <SessionKeeper />
     </div>
   );
 }

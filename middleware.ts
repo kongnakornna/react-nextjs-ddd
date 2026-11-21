@@ -1,12 +1,13 @@
-import { NextResponse, type NextRequest } from 'next/server';
-
 import {
   BACKEND_ACCESS_TOKEN_COOKIE,
   BACKEND_REFRESH_TOKEN_COOKIE,
   SESSION_COOKIE,
 } from '@/config';
 
-const PUBLIC_PATHS = ['/sign-in', '/sign-up', '/forgot-password'];
+import { NextResponse, type NextRequest } from 'next/server';
+
+// '/logout' clears the auth cookies and forwards to /sign-in (app/logout/route.ts).
+const PUBLIC_PATHS = ['/sign-in', '/sign-up', '/forgot-password', '/logout'];
 
 const ROUTE_PERMISSIONS: Record<string, string[]> = {
   '/dashboard': ['admin', 'user'],
@@ -19,11 +20,13 @@ const ROUTE_PERMISSIONS: Record<string, string[]> = {
   '/email': ['admin'],
   '/batch': ['admin'],
   '/iot': ['admin', 'user'],
+  '/iotmonitoring': ['admin', 'user'],
   '/mqtt': ['admin'],
   '/wos': ['admin', 'user'],
   '/jobs': ['admin', 'user'],
   '/reports': ['admin', 'user'],
   '/monitoring': ['admin', 'user'],
+  '/monitoring/smarthome/dashboardsetting': ['admin', 'user'],
   '/ai-analytics': ['admin'],
   '/ai-chatbot': ['admin', 'user'],
   '/settings': ['admin'],
@@ -56,8 +59,15 @@ export async function middleware(request: NextRequest) {
     request.cookies.has(BACKEND_REFRESH_TOKEN_COOKIE);
   const hasLocalSession = request.cookies.has(SESSION_COOKIE);
 
+  // Not signed in, or every session cookie has expired (the browser drops a
+  // cookie once its Max-Age passes) → /logout clears leftovers → /sign-in.
+  // An expired *token* inside a still-present cookie is caught client-side:
+  // the API client / session keeper get 401 from refresh → /logout?reason=expired.
   if (!hasBackendSession && !hasLocalSession) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+    const logout = new URL('/logout', request.url);
+    logout.searchParams.set('reason', 'unauthenticated');
+    logout.searchParams.set('next', pathname + request.nextUrl.search);
+    return NextResponse.redirect(logout);
   }
 
   return NextResponse.next();

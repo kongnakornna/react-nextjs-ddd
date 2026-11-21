@@ -55,6 +55,16 @@ export const HORIZONTAL_MENU: NavItem[] = [
     ],
   },
   {
+    labelKey: 'nav.iotMonitoring',
+    label: 'IoT Monitoring',
+    icon: 'MonitorDot',
+    href: '/iotmonitoring/iotdashboard',
+    children: [
+      { labelKey: 'nav.iotDashboard', label: 'IoT Dashboard', icon: 'LayoutDashboard', href: '/iotmonitoring/iotdashboard' },
+      { labelKey: 'nav.smarthome', label: 'SmartHome', icon: 'Home', href: '/monitoring/smarthome' },
+    ],
+  },
+  {
     labelKey: 'nav.users',
     label: 'Users',
     icon: 'Users',

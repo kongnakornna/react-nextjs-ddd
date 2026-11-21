@@ -34,10 +34,16 @@
 ตามแบบเดียวกับ `src/features/iot` และ `src/features/monitoring`
 และสร้าง template ใหม่ชื่อ **iotdashboard** (เต็มจอ ไม่มีเมนูแนวนอน) แยกจาก `TablerLayout`
 
-| Route ใหม่ | PHP เดิม | สิทธิ์ |
+| Route ใหม่ | PHP เดิม | สิทธิ์ (`middleware.ts`) |
 |---|---|---|
 | `/monitoring/smarthome` | `smarthome/index` | admin, user |
-| `/monitoring/smarthome/dashboardsetting` | `smarthome/dashboardsetting` | admin |
+| `/monitoring/smarthome/dashboardsetting` | `smarthome/dashboardsetting` | admin, user ⚠️ |
+
+> ⚠️ `middleware.ts` อนุญาต `admin, user` แต่ `src/core/config/route-permissions.config.ts` ระบุ `admin` —
+> ค่าที่มีผลจริงตอนเปิดหน้าคือ `middleware.ts` (PHP เดิมให้เฉพาะ role 1, 2) ควรตั้งให้ตรงกัน
+
+เข้าจากเมนูได้ 2 ทาง: **IoT Monitoring › SmartHome** และ **Monitoring › SmartHome**
+(ดู [iotdashboard_module.md](iotdashboard_module.md))
 
 > URL `/monitoring/smarthome` เดิมเป็นหน้า stub (`MonitoringDashboardPage module="smarthome"` ใต้ `(dashboard)`) — ถูกแทนที่ด้วยหน้านี้ซึ่งใช้ template iotdashboard
 > หน้า monitoring อื่น (`smartcity`, `industry`, …) ยังใช้ `(dashboard)/monitoring/layout.tsx` เหมือนเดิม
@@ -219,9 +225,16 @@ app/(iotdashboard)/monitoring/smarthome/*  ──►  features/smarthome/present
 | `footer_vertical4m.php` | `iotdashboard-footer.tsx` + `<ThemeBuilder/>` ใน `.settings` | ปุ่มลอย Theme Builder |
 | `theme_builder.php` | `app/_components/auth/theme-builder.tsx` (เดิม) | key `tabler-*` ใน localStorage เหมือนกัน |
 
-ใช้กับ dashboard IoT อื่นได้ทันที — สร้าง route ใต้ `app/(iotdashboard)/` เช่น
-`app/(iotdashboard)/monitoring/smartcity/page.tsx` (ลบไฟล์เดิมใต้ `(dashboard)` ก่อน เพราะ URL ซ้ำไม่ได้) จะได้ header/footer/theme builder เดียวกัน
-(`home` ของ logo กำหนดใน `app/(iotdashboard)/layout.tsx`)
+- **กว้าง 100% เสมอ** — เนื้อหาไม่มี padding ซ้าย-ขวา และไม่ถูกจำกัดแม้ Theme Builder ตั้ง layout เป็น Boxed
+  (class `page-iot-fullwidth` + CSS ใน `app/globals.scss`)
+- ข้อความใน header / footer แปลได้ (`iotLayout.*`, `layout.footer.*`)
+
+รายละเอียดเต็ม (โครงสร้าง, CSS, ผลทดสอบความกว้าง, วิธีใช้กับหน้าใหม่) → [iotdashboard_template.md](iotdashboard_template.md)
+
+### คำแปล
+
+ทุกข้อความของ SmartHome แปลได้ 10 ภาษา (`smarthome.*`, `smarthome.menu.*`) — เมนูด้านข้างใช้
+`labelKey` ใน `SMARTHOME_MENU` → ดู [i18n_module.md](i18n_module.md)
 
 ---
 
@@ -241,7 +254,8 @@ app/(iotdashboard)/monitoring/smarthome/*  ──►  features/smarthome/present
 | `setupDoorSwitch` (สลับ BG_CLOSED/BG_OPENED) | `DisplaySettings` → `layout.doorOpened` |
 | `updateHUDOpacity` / `updateBrightness` | `cardOpacity` / `screenBrightness` |
 | icon ตามชื่อ (`temp`, `humi`, `fan`, `door`) | `deviceIconKey()` + `@tabler/icons-react` |
-| `role_id_api == 1 \|\| 2` เห็นเมนู Configuration | `middleware.ts` + `route-permissions.config.ts` (`/monitoring/smarthome/dashboardsetting`: admin) |
+| `role_id_api == 1 \|\| 2` เห็นเมนู Configuration | `middleware.ts` (`/monitoring/smarthome/dashboardsetting`) — ดูหมายเหตุสิทธิ์ในข้อ 1 |
+| ข้อความ PHP `$this->lang->line()` | `useI18n()` + `tf()` (`smarthome.*`) |
 
 เมนูอื่นของ smarthome (Analysis Chart, Alarm Log, Alarm Configuration, Schedule, Control Device)
 ชี้ไปยังหน้าที่มีอยู่แล้วในโปรเจค (`/iot/reports`, `/reports/alarm`, `/settings/alarm`,
@@ -287,4 +301,5 @@ config round-trip (รูปแบบ PHP), ตำแหน่ง default, Toggl
   (มี `src/features/websocket` และ proxy `/ws/*` พร้อมแล้ว)
 - **หลาย location**: ตอนนี้ fix location 3; ถ้าต้องการเลือกได้ ให้อ่าน `?location_id=` แล้ว map ไปยัง config
 - **หน้า Analysis Chart / Schedule เฉพาะ smarthome**: ตอนนี้ลิงก์ไปหน้ากลางที่มีอยู่
+- **สิทธิ์หน้า dashboardsetting**: `middleware.ts` (admin, user) ไม่ตรงกับ `route-permissions.config.ts` (admin)
 - ยังไม่ได้ทดสอบกับข้อมูลอุปกรณ์จริง (DB ในเครื่องตอนทดสอบไม่มีอุปกรณ์ใน bucket ใดเลย)

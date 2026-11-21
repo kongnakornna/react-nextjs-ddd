@@ -110,7 +110,9 @@
     "logsControlReport": "日志控制报告",
     "deviceReport": "设备报告",
     "home": "home",
-    "apiHealth": "API 健康状态"
+    "apiHealth": "API 健康状态",
+    "iotMonitoring": "物联网监控",
+    "iotDashboard": "物联网仪表板"
   },
   "settings": {
     "title": "设置",
@@ -570,7 +572,9 @@
     "contactAdmin": "联系管理员",
     "testCredentials": "使用 admin / P@ssw0rd 测试系统",
     "invalidCredentials": "用户名或密码无效",
-    "validationError": "验证错误"
+    "validationError": "验证错误",
+    "sessionExpired": "您的会话已过期，请重新登录。",
+    "pleaseSignIn": "请登录以继续。"
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "已更新",
       "swalUpdateFailed": "更新失败"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "物联网监控",
+    "title": "物联网仪表板",
+    "load": "加载",
+    "welcome": "物联网概览",
+    "healthyRate": "正常率",
+    "normal": "正常",
+    "warning": "警告",
+    "alarm": "报警",
+    "controlsOn": "已开启的控制设备",
+    "groups": "设备分组",
+    "device": "设备",
+    "value": "数值",
+    "status": "状态",
+    "noAlerts": "没有活动警报"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "仪表板",
+      "configuration": "配置",
+      "analysisChart": "分析图表",
+      "alarmLog": "报警日志",
+      "alarmConfiguration": "报警配置",
+      "schedule": "排程",
+      "controlDevice": "控制设备"
+    },
+    "devices": "台设备",
+    "noDeviceData": "没有设备数据",
+    "noDevice": "无设备",
+    "settings": "设置",
+    "mainDoor": "主门",
+    "cardOpacity": "卡片不透明度",
+    "screenBrightness": "屏幕亮度",
+    "jsonPreview": "JSON 预览",
+    "reset": "重置",
+    "save": "保存",
+    "saving": "正在保存...",
+    "loading": "正在加载仪表板...",
+    "refresh": "刷新",
+    "dragPoint": "拖动点",
+    "turnedOn": "{name} 已开启",
+    "turnedOff": "{name} 已关闭",
+    "controlFailed": "控制 {name} 失败",
+    "saved": "已保存",
+    "saveFailed": "保存失败",
+    "jsonCopied": "已复制 JSON",
+    "copyFailed": "复制失败"
+  },
+  "iotLayout": {
+    "overview": "概览",
+    "profile": "个人资料",
+    "historyLog": "历史记录",
+    "settings": "设置",
+    "logout": "退出登录",
+    "logoutConfirm": "确定要退出登录吗？",
+    "cancel": "取消",
+    "userMenu": "打开用户菜单"
   }
 }

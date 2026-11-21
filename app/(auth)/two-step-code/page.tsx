@@ -112,7 +112,7 @@ export default function TwoStepCodePage() {
         </div>
       </form>
       <div className="text-center text-secondary mt-3">
-        ไม่ได้รับรหัส? <a href="javascript:void(0)">ส่งรหัสใหม่</a>
+        ไม่ได้รับรหัส? <a href="#" onClick={(e) => e.preventDefault()}>ส่งรหัสใหม่</a>
       </div>
     </>
   );

@@ -67,9 +67,13 @@ export default function ResetPasswordPage() {
                 />
                 <span className="input-group-text">
                   <a
-                    href="javascript:void(0)"
+                    href="#"
+                    role="button"
                     className="link-secondary"
-                    onClick={() => setPasswordVisible(!passwordVisible)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPasswordVisible(!passwordVisible);
+                    }}
                   >
                     {passwordVisible ? (
                       <svg xmlns="http://www.w3.org/2000/svg" className="icon" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -101,9 +105,13 @@ export default function ResetPasswordPage() {
                 />
                 <span className="input-group-text">
                   <a
-                    href="javascript:void(0)"
+                    href="#"
+                    role="button"
                     className="link-secondary"
-                    onClick={() => setConfirmVisible(!confirmVisible)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setConfirmVisible(!confirmVisible);
+                    }}
                   >
                     {confirmVisible ? (
                       <svg xmlns="http://www.w3.org/2000/svg" className="icon" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">

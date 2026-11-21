@@ -9,7 +9,7 @@ export class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 
-  constructor(url: string = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001') {
+  constructor(url: string = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/bigo/ws/stream') {
     this.url = url;
   }
 

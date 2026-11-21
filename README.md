@@ -18,31 +18,31 @@
 ┌──────────────────────────────────────────────────────────┐
 │  WEB (app/)                                              │
 │  Next.js App Router — Pages, Layouts, Server Actions     │
-│  เรียก BFF Use Cases ผ่าน DI Container                    │
+│  เรียก BFF Use Cases ผ่าน DI Container                     │
 └─────────────────────────┬────────────────────────────────┘
                           ▼
 ┌──────────────────────────────────────────────────────────┐
-│  INTERFACE ADAPTERS (src/interface-adapters/)             │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐                  │
-│  │   API   │  │   BFF   │  │   E2E   │                  │
-│  │ /api/*  │  │ Server  │  │  Test   │                  │
-│  │ Routes  │  │ Actions │  │ Adapters│                  │
-│  └────┬────┘  └────┬────┘  └────┬────┘                  │
+│  INTERFACE ADAPTERS (src/interface-adapters/)            │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐                   │
+│  │   API   │  │   BFF   │  │   E2E   │                   │
+│  │ /api/*  │  │ Server  │  │  Test   │                   │
+│  │ Routes  │  │ Actions │  │ Adapters│                   │
+│  └────┬────┘  └─────┬───┘  └────┬────┘                   │
 │       └─────────────┼───────────┘                        │
 │                     ▼                                    │
 │            Contract → Controller → Presenter             │
 └─────────────────────────┬────────────────────────────────┘
                           ▼
 ┌──────────────────────────────────────────────────────────┐
-│  APPLICATION (src/application/)                           │
+│  APPLICATION (src/application/)                          │
 │  Use Cases ← Repository Interfaces ← Service Interfaces  │
-│  Business Logic บริสุทธิ์ ไม่รู้จัก HTTP/DB/Framework    │
+│  Business Logic บริสุทธิ์ ไม่รู้จัก HTTP/DB/Framework            │
 └─────────────────────────┬────────────────────────────────┘
                           ▲
 ┌─────────────────────────┴────────────────────────────────┐
-│  INFRASTRUCTURE (src/infrastructure/)                     │
-│  Repository Implementations, Auth Service, DB Adapters    │
-│  implements interfaces จาก Application layer              │
+│  INFRASTRUCTURE (src/infrastructure/)                    │
+│  Repository Implementations, Auth Service, DB Adapters   │
+│  implements interfaces จาก Application layer             │
 └─────────────────────────┬────────────────────────────────┘
                           │
 ┌─────────────────────────┴────────────────────────────────┐

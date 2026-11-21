@@ -110,7 +110,9 @@
     "liveDashboard": "Live Dashboard",
     "alerts": "Alerts",
     "home": "home",
-    "apiHealth": "សុខភាព API"
+    "apiHealth": "សុខភាព API",
+    "iotMonitoring": "ការត្រួតពិនិត្យ IoT",
+    "iotDashboard": "ផ្ទាំងគ្រប់គ្រង IoT"
   },
   "common": {
     "save": "រក្សាទុក",
@@ -183,7 +185,9 @@
     "contactAdmin": "ទាក់ទងអ្នកគ្រប់គ្រង",
     "testCredentials": "ប្រើ admin / P@ssw0rd ដើម្បីសាកល្បងប្រព័ន្ធ",
     "invalidCredentials": "Invalid username or password",
-    "validationError": "Validation Error"
+    "validationError": "Validation Error",
+    "sessionExpired": "សម័យរបស់អ្នកបានផុតកំណត់។ សូមចូលម្តងទៀត។",
+    "pleaseSignIn": "សូមចូលដើម្បីបន្ត។"
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "បានធ្វើបច្ចុប្បន្នភាព",
       "swalUpdateFailed": "ធ្វើបច្ចុប្បន្នភាពបរាជ័យ"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "ការត្រួតពិនិត្យ IoT",
+    "title": "ផ្ទាំងគ្រប់គ្រង IoT",
+    "load": "ផ្ទុក",
+    "welcome": "ទិដ្ឋភាពទូទៅ IoT",
+    "healthyRate": "អត្រាធម្មតា",
+    "normal": "ធម្មតា",
+    "warning": "ការព្រមាន",
+    "alarm": "ការជូនដំណឹងអាសន្ន",
+    "controlsOn": "ឧបករណ៍បញ្ជាដែលបើក",
+    "groups": "ក្រុមឧបករណ៍",
+    "device": "ឧបករណ៍",
+    "value": "តម្លៃ",
+    "status": "ស្ថានភាព",
+    "noAlerts": "គ្មានការជូនដំណឹង"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "ផ្ទាំងគ្រប់គ្រង",
+      "configuration": "ការកំណត់រចនា",
+      "analysisChart": "តារាងវិភាគ",
+      "alarmLog": "កំណត់ហេតុការជូនដំណឹង",
+      "alarmConfiguration": "ការកំណត់ការជូនដំណឹង",
+      "schedule": "កាលវិភាគ",
+      "controlDevice": "បញ្ជាឧបករណ៍"
+    },
+    "devices": "ឧបករណ៍",
+    "noDeviceData": "គ្មានទិន្នន័យឧបករណ៍",
+    "noDevice": "គ្មានឧបករណ៍",
+    "settings": "ការកំណត់",
+    "mainDoor": "ទ្វារមេ",
+    "cardOpacity": "ភាពស្រអាប់កាត",
+    "screenBrightness": "ពន្លឺអេក្រង់",
+    "jsonPreview": "មើលជាមុន JSON",
+    "reset": "កំណត់ឡើងវិញ",
+    "save": "រក្សាទុក",
+    "saving": "កំពុងរក្សាទុក...",
+    "loading": "កំពុងផ្ទុកផ្ទាំងគ្រប់គ្រង...",
+    "refresh": "ផ្ទុកឡើងវិញ",
+    "dragPoint": "អូសចំណុច",
+    "turnedOn": "បានបើក {name}",
+    "turnedOff": "បានបិទ {name}",
+    "controlFailed": "បរាជ័យក្នុងការបញ្ជា {name}",
+    "saved": "បានរក្សាទុក",
+    "saveFailed": "រក្សាទុកមិនបានសម្រេច",
+    "jsonCopied": "បានចម្លង JSON",
+    "copyFailed": "ចម្លងមិនបានសម្រេច"
+  },
+  "iotLayout": {
+    "overview": "ទិដ្ឋភាពទូទៅ",
+    "profile": "ប្រវត្តិរូប",
+    "historyLog": "កំណត់ហេតុប្រវត្តិ",
+    "settings": "ការកំណត់",
+    "logout": "ចាកចេញ",
+    "logoutConfirm": "តើអ្នកចង់ចាកចេញទេ?",
+    "cancel": "បោះបង់",
+    "userMenu": "បើកម៉ឺនុយអ្នកប្រើ"
   }
 }

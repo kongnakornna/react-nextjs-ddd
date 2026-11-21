@@ -110,7 +110,9 @@
     "liveDashboard": "Live Dashboard",
     "alerts": "Alerts",
     "home": "home",
-    "apiHealth": "ສະພາບ API"
+    "apiHealth": "ສະພາບ API",
+    "iotMonitoring": "ຕິດຕາມ IoT",
+    "iotDashboard": "ແດຊບອດ IoT"
   },
   "common": {
     "save": "ບັນທຶກ",
@@ -183,7 +185,9 @@
     "contactAdmin": "ຕິດຕໍ່ຜູ້ດູແລລະບົບ",
     "testCredentials": "ໃຊ້ admin / P@ssw0rd ເພື່ອທົດສອບລະບົບ",
     "invalidCredentials": "Invalid username or password",
-    "validationError": "Validation Error"
+    "validationError": "Validation Error",
+    "sessionExpired": "ເຊດຊັນໝົດອາຍຸແລ້ວ ກະລຸນາເຂົ້າສູ່ລະບົບອີກຄັ້ງ",
+    "pleaseSignIn": "ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອດຳເນີນການຕໍ່"
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "ອັບເດດແລ້ວ",
       "swalUpdateFailed": "ອັບເດດລົ້ມເຫຼວ"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "ຕິດຕາມ IoT",
+    "title": "ແດຊບອດ IoT",
+    "load": "ໂຫຼດ",
+    "welcome": "ພາບລວມ IoT",
+    "healthyRate": "ອັດຕາປົກກະຕິ",
+    "normal": "ປົກກະຕິ",
+    "warning": "ເຕືອນ",
+    "alarm": "ແຈ້ງເຕືອນ",
+    "controlsOn": "ອຸປະກອນຄວບຄຸມທີ່ເປີດ",
+    "groups": "ກຸ່ມອຸປະກອນ",
+    "device": "ອຸປະກອນ",
+    "value": "ຄ່າ",
+    "status": "ສະຖານະ",
+    "noAlerts": "ບໍ່ມີການແຈ້ງເຕືອນ"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "ແດຊບອດ",
+      "configuration": "ຕັ້ງຄ່າໜ້າຈໍ",
+      "analysisChart": "ກຣາຟວິເຄາະ",
+      "alarmLog": "ບັນທຶກການແຈ້ງເຕືອນ",
+      "alarmConfiguration": "ຕັ້ງຄ່າການແຈ້ງເຕືອນ",
+      "schedule": "ຕັ້ງເວລາ",
+      "controlDevice": "ຄວບຄຸມອຸປະກອນ"
+    },
+    "devices": "ອຸປະກອນ",
+    "noDeviceData": "ບໍ່ມີຂໍ້ມູນອຸປະກອນ",
+    "noDevice": "ບໍ່ມີອຸປະກອນ",
+    "settings": "ຕັ້ງຄ່າ",
+    "mainDoor": "ປະຕູຫຼັກ",
+    "cardOpacity": "ຄວາມທຶບຂອງບັດ",
+    "screenBrightness": "ຄວາມສະຫວ່າງໜ້າຈໍ",
+    "jsonPreview": "ຕົວຢ່າງ JSON",
+    "reset": "ຕັ້ງໃໝ່",
+    "save": "ບັນທຶກ",
+    "saving": "ກຳລັງບັນທຶກ...",
+    "loading": "ກຳລັງໂຫຼດແດຊບອດ...",
+    "refresh": "ໂຫຼດໃໝ່",
+    "dragPoint": "ລາກຈຸດ",
+    "turnedOn": "ເປີດ {name} ແລ້ວ",
+    "turnedOff": "ປິດ {name} ແລ້ວ",
+    "controlFailed": "ຄວບຄຸມ {name} ບໍ່ສຳເລັດ",
+    "saved": "ບັນທຶກແລ້ວ",
+    "saveFailed": "ບັນທຶກບໍ່ສຳເລັດ",
+    "jsonCopied": "ສຳເນົາ JSON ແລ້ວ",
+    "copyFailed": "ສຳເນົາບໍ່ສຳເລັດ"
+  },
+  "iotLayout": {
+    "overview": "ພາບລວມ",
+    "profile": "ໂປຣໄຟລ໌",
+    "historyLog": "ປະຫວັດການໃຊ້ງານ",
+    "settings": "ຕັ້ງຄ່າ",
+    "logout": "ອອກຈາກລະບົບ",
+    "logoutConfirm": "ຕ້ອງການອອກຈາກລະບົບບໍ່?",
+    "cancel": "ຍົກເລີກ",
+    "userMenu": "ເປີດເມນູຜູ້ໃຊ້"
   }
 }

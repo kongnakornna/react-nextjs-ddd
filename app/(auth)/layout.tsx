@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import '../globals.scss';
 import { AuthExtras } from '@/app/_components/auth/auth-extras';
 
 export const metadata: Metadata = {

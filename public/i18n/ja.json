@@ -110,7 +110,9 @@
     "logsControlReport": "制御ログレポート",
     "deviceReport": "デバイスレポート",
     "home": "home",
-    "apiHealth": "API ヘルス"
+    "apiHealth": "API ヘルス",
+    "iotMonitoring": "IoTモニタリング",
+    "iotDashboard": "IoTダッシュボード"
   },
   "settings": {
     "title": "設定",
@@ -570,7 +572,9 @@
     "contactAdmin": "管理者に連絡",
     "testCredentials": "管理者 / P@ssw0rd でシステムをテスト",
     "invalidCredentials": "ユーザー名またはパスワードが無効です",
-    "validationError": "検証エラー"
+    "validationError": "検証エラー",
+    "sessionExpired": "セッションの有効期限が切れました。もう一度ログインしてください。",
+    "pleaseSignIn": "続行するにはログインしてください。"
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "更新完了",
       "swalUpdateFailed": "更新失敗"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "IoTモニタリング",
+    "title": "IoTダッシュボード",
+    "load": "読み込み",
+    "welcome": "IoT概要",
+    "healthyRate": "正常率",
+    "normal": "正常",
+    "warning": "警告",
+    "alarm": "アラーム",
+    "controlsOn": "ON の制御機器",
+    "groups": "デバイスグループ",
+    "device": "デバイス",
+    "value": "値",
+    "status": "状態",
+    "noAlerts": "アクティブなアラートはありません"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "ダッシュボード",
+      "configuration": "設定",
+      "analysisChart": "分析チャート",
+      "alarmLog": "アラームログ",
+      "alarmConfiguration": "アラーム設定",
+      "schedule": "スケジュール",
+      "controlDevice": "機器制御"
+    },
+    "devices": "台",
+    "noDeviceData": "デバイスデータがありません",
+    "noDevice": "デバイスなし",
+    "settings": "設定",
+    "mainDoor": "正面ドア",
+    "cardOpacity": "カードの不透明度",
+    "screenBrightness": "画面の明るさ",
+    "jsonPreview": "JSON プレビュー",
+    "reset": "リセット",
+    "save": "保存",
+    "saving": "保存中...",
+    "loading": "ダッシュボードを読み込み中...",
+    "refresh": "更新",
+    "dragPoint": "ポイントをドラッグ",
+    "turnedOn": "{name} を ON にしました",
+    "turnedOff": "{name} を OFF にしました",
+    "controlFailed": "{name} の制御に失敗しました",
+    "saved": "保存しました",
+    "saveFailed": "保存に失敗しました",
+    "jsonCopied": "JSON をコピーしました",
+    "copyFailed": "コピーに失敗しました"
+  },
+  "iotLayout": {
+    "overview": "概要",
+    "profile": "プロフィール",
+    "historyLog": "履歴ログ",
+    "settings": "設定",
+    "logout": "ログアウト",
+    "logoutConfirm": "ログアウトしますか？",
+    "cancel": "キャンセル",
+    "userMenu": "ユーザーメニューを開く"
   }
 }

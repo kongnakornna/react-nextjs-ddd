@@ -7,9 +7,19 @@ const authApi = new AuthApiDataSource();
 
 import Link from 'next/link';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
+
+import { resetSessionClock } from '@/src/core/services/session.service';
+import { tf } from '@/src/core/ui/tf';
+
+/** Only same-site relative paths (no open redirect), never back to auth pages. */
+function safeNext(raw: string | null): string {
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/dashboard';
+  if (raw.startsWith('/logout') || raw.startsWith('/sign-in')) return '/dashboard';
+  return raw;
+}
 
 export default function SignInPage() {
   const router = useRouter();
@@ -22,6 +32,15 @@ export default function SignInPage() {
 
   const togglePassword = () => setPasswordVisible(!passwordVisible);
 
+  // Set by /logout: ?reason=expired|unauthenticated&next=/page (read after mount → no hydration mismatch)
+  const [reason, setReason] = useState<string | null>(null);
+  const [next, setNext] = useState('/dashboard');
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    setReason(q.get('reason'));
+    setNext(safeNext(q.get('next')));
+  }, []);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
@@ -32,7 +51,8 @@ export default function SignInPage() {
       // → Next proxy → FastAPI :8000. The backend sets HttpOnly
       // access_token / refresh_token cookies that middleware.ts checks.
       await authApi.login({ username, password });
-      router.push('/dashboard');
+      resetSessionClock(); // fresh tokens → next refresh in 30 min
+      router.push(next);
     } catch (err: unknown) {
       const { status, message } = err as Error & { status?: number };
       if (status === 401) {
@@ -52,6 +72,16 @@ export default function SignInPage() {
       <div className="card card-md">
         <div className="card-body">
           <h2 className="h2 text-center mb-4">{t('login.title')}</h2>
+          {!error && reason === 'expired' && (
+            <div className="alert alert-warning mb-3" role="status">
+              {tf(t, 'login.sessionExpired', 'Your session has expired. Please sign in again.')}
+            </div>
+          )}
+          {!error && reason === 'unauthenticated' && (
+            <div className="alert alert-info mb-3" role="status">
+              {tf(t, 'login.pleaseSignIn', 'Please sign in to continue.')}
+            </div>
+          )}
           {error && <div className="alert alert-danger mb-3">{error}</div>}
           <form onSubmit={onSubmit} autoComplete="off">
             <div className="mb-3">

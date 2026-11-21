@@ -1,0 +1,55 @@
+/* =========================================================
+   Global Styles — port of icmonangular src/styles.scss
+   - Custom Tabler utilities
+   - Boxed layout tweaks
+   - Dark-mode typography (.prose) overrides
+
+   Loaded by app/layout.tsx right after globals.scss.
+   Tabler core/themes and the Tailwind layers are already in globals.scss —
+   they are NOT imported again here (would ship the whole CSS twice).
+   ========================================================= */
+
+/* ---------- Tabler custom utilities ----------
+   public/assets/tabler/scss/custom/_utilities.scss
+   (resolved via sassOptions.includePaths ['./public/assets', './node_modules'] in next.config.mjs) */
+@use 'tabler/scss/custom/utilities';
+
+/* ---------- Layout: boxed ---------- */
+.layout-boxed-2 {
+  --tblr-theme-boxed-width: 1600px;
+}
+
+/* Full-width containers on large screens (TablerLayout uses .container-xl). */
+@media (min-width: 1400px) {
+  .container-xxl,
+  .container-xl,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container {
+    max-width: 100%;
+  }
+}
+
+/* =========================================================
+   Dark mode — Tailwind Typography (.prose)
+   In this project the `dark` class is set on <html> (theme.service.ts,
+   app/layout.tsx), so match both <html class="dark"> and <body class="dark">.
+   ========================================================= */
+:is(html.dark, body.dark) {
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose blockquote > p,
+  .prose p > strong,
+  .prose p > a,
+  .prose {
+    color: #ffffff;
+  }
+
+  .prose li > strong {
+    color: #ffffff;
+    font-weight: 700;
+  }
+}

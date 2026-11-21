@@ -3,6 +3,19 @@
 // Theme Builder rules: [data-bs-theme-primary|font|radius|base] (not included in tabler.scss)
 @import '@tabler/core/scss/tabler-themes';
 
+// iotdashboard template (app/_components/layout/iotdashboard): always 100% wide,
+// even when the Theme Builder layout is "Boxed" (Tabler pads <body> and caps .page).
+body.layout-boxed:has(.page-iot-fullwidth) {
+  padding: 0;
+  background: var(--tblr-body-bg);
+}
+.layout-boxed .page.page-iot-fullwidth {
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

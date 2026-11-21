@@ -86,6 +86,16 @@ export const MENU_CONFIG: MenuItem[] = [
     ],
   },
   {
+    id: 'iotmonitoring',
+    label: 'IoT Monitoring',
+    icon: 'MonitorDot',
+    permission: 'iot.view',
+    children: [
+      { id: 'iotmon-iotdashboard', label: 'IoT Dashboard', icon: 'LayoutDashboard', href: '/iotmonitoring/iotdashboard', permission: 'iot.view' },
+      { id: 'iotmon-smarthome', label: 'SmartHome', icon: 'Home', href: '/monitoring/smarthome', permission: 'monitoring.view' },
+    ],
+  },
+  {
     id: 'wos',
     label: 'Work Orders',
     icon: 'ClipboardList',

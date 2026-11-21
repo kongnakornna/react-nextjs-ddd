@@ -110,7 +110,9 @@
     "logsControlReport": "ထိန်းချုပ်မှု မှတ်တမ်း အစီရင်ခံစာ",
     "deviceReport": "Device အစီရင်ခံစာ",
     "home": "home",
-    "apiHealth": "API ကျန်းမာရေး"
+    "apiHealth": "API ကျန်းမာရေး",
+    "iotMonitoring": "IoT စောင့်ကြည့်ခြင်း",
+    "iotDashboard": "IoT ဒက်ရှ်ဘုတ်"
   },
   "settings": {
     "title": "ပြင်ဆင်မှု",
@@ -570,7 +572,9 @@
     "contactAdmin": "Admin ကို ဆက်သွယ်ရန်",
     "testCredentials": "admin / P@ssw0rd ဖြင့် စနစ် စမ်းသုံးရန်",
     "invalidCredentials": "User Name သို့မဟုတ် စကားဝှက် မှားနေပါသည်",
-    "validationError": "Validation အမှား"
+    "validationError": "Validation အမှား",
+    "sessionExpired": "စက်ရှင် သက်တမ်းကုန်သွားပါပြီ။ ထပ်မံ ဝင်ရောက်ပါ။",
+    "pleaseSignIn": "ဆက်လက်အသုံးပြုရန် ဝင်ရောက်ပါ။"
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "အပ်ဒိတ်ပြီး",
       "swalUpdateFailed": "အပ်ဒိတ် မအောင်မြင်"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "IoT စောင့်ကြည့်ခြင်း",
+    "title": "IoT ဒက်ရှ်ဘုတ်",
+    "load": "ဖွင့်ရန်",
+    "welcome": "IoT အကျဉ်းချုပ်",
+    "healthyRate": "ပုံမှန်နှုန်း",
+    "normal": "ပုံမှန်",
+    "warning": "သတိပေးချက်",
+    "alarm": "အချက်ပေးသံ",
+    "controlsOn": "ဖွင့်ထားသော ထိန်းချုပ်ကိရိယာ",
+    "groups": "ကိရိယာအုပ်စုများ",
+    "device": "ကိရိယာ",
+    "value": "တန်ဖိုး",
+    "status": "အခြေအနေ",
+    "noAlerts": "သတိပေးချက် မရှိပါ"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "ဒက်ရှ်ဘုတ်",
+      "configuration": "ပြင်ဆင်သတ်မှတ်ခြင်း",
+      "analysisChart": "ခွဲခြမ်းစိတ်ဖြာဇယား",
+      "alarmLog": "အချက်ပေးမှတ်တမ်း",
+      "alarmConfiguration": "အချက်ပေးသတ်မှတ်ချက်",
+      "schedule": "အချိန်ဇယား",
+      "controlDevice": "ကိရိယာထိန်းချုပ်ရန်"
+    },
+    "devices": "ကိရိယာ",
+    "noDeviceData": "ကိရိယာဒေတာ မရှိပါ",
+    "noDevice": "ကိရိယာ မရှိပါ",
+    "settings": "ဆက်တင်များ",
+    "mainDoor": "အဓိကတံခါး",
+    "cardOpacity": "ကတ်အလင်းပိတ်မှု",
+    "screenBrightness": "မျက်နှာပြင်အလင်း",
+    "jsonPreview": "JSON အစမ်းကြည့်",
+    "reset": "ပြန်လည်သတ်မှတ်",
+    "save": "သိမ်းဆည်း",
+    "saving": "သိမ်းဆည်းနေသည်...",
+    "loading": "ဒက်ရှ်ဘုတ် ဖွင့်နေသည်...",
+    "refresh": "ပြန်လည်ဖွင့်",
+    "dragPoint": "အမှတ်ကို ဆွဲပါ",
+    "turnedOn": "{name} ကို ဖွင့်လိုက်ပြီ",
+    "turnedOff": "{name} ကို ပိတ်လိုက်ပြီ",
+    "controlFailed": "{name} ကို ထိန်းချုပ်၍ မရပါ",
+    "saved": "သိမ်းဆည်းပြီး",
+    "saveFailed": "သိမ်းဆည်း၍ မရပါ",
+    "jsonCopied": "JSON ကူးယူပြီး",
+    "copyFailed": "ကူးယူ၍ မရပါ"
+  },
+  "iotLayout": {
+    "overview": "အကျဉ်းချုပ်",
+    "profile": "ပရိုဖိုင်",
+    "historyLog": "မှတ်တမ်းဟောင်း",
+    "settings": "ဆက်တင်များ",
+    "logout": "ထွက်ရန်",
+    "logoutConfirm": "ထွက်လိုပါသလား?",
+    "cancel": "မလုပ်တော့ပါ",
+    "userMenu": "အသုံးပြုသူမီနူး ဖွင့်ရန်"
   }
 }

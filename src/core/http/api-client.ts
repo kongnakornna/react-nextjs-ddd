@@ -107,23 +107,53 @@ export function errorMessage(body: any, status: number): string {
   return `Server Error (${status})`;
 }
 
-let refreshing: Promise<boolean> | null = null;
+/**
+ * Result of `PATCH /api/v1/authentication/refresh`:
+ * - `ok`      new access_token cookie issued
+ * - `expired` 401/403 — refresh token missing, expired or revoked → must sign in again
+ * - `error`   network error / 5xx — backend unreachable; do NOT log the user out
+ */
+export type RefreshResult = 'ok' | 'expired' | 'error';
 
-/** One refresh at a time; concurrent 401s wait for the same call. */
-export function refreshSession(): Promise<boolean> {
+let refreshing: Promise<RefreshResult> | null = null;
+
+/** One refresh at a time; concurrent 401s (and the session keeper) share the same call. */
+export function refreshSessionStatus(): Promise<RefreshResult> {
   if (!refreshing) {
     refreshing = fetch(resolveUrl(`${API_PREFIX}/authentication/refresh`), {
       method: 'PATCH',
       credentials: 'include',
       headers: { Accept: 'application/json' },
     })
-      .then((r) => r.ok)
-      .catch(() => false)
+      .then((r): RefreshResult => (r.ok ? 'ok' : r.status === 401 || r.status === 403 ? 'expired' : 'error'))
+      .catch((): RefreshResult => 'error')
       .finally(() => {
         refreshing = null;
       });
   }
   return refreshing;
+}
+
+/** `true` when the refresh succeeded. */
+export async function refreshSession(): Promise<boolean> {
+  return (await refreshSessionStatus()) === 'ok';
+}
+
+/** Route handler that clears the auth cookies and forwards to /sign-in (app/logout/route.ts). */
+export const LOGOUT_PATH = '/logout';
+let redirectingToLogout = false;
+
+/**
+ * Leave the app because the session is gone: `/logout?reason=…&next=<current page>`.
+ * Browser only; called once even if several requests fail at the same time.
+ */
+export function redirectToLogout(reason: 'expired' | 'unauthenticated' = 'expired'): void {
+  if (typeof window === 'undefined' || redirectingToLogout) return;
+  const { pathname, search } = window.location;
+  if (pathname.startsWith(LOGOUT_PATH) || pathname.startsWith('/sign-in')) return;
+  redirectingToLogout = true;
+  const next = encodeURIComponent(pathname + search);
+  window.location.assign(`${LOGOUT_PATH}?reason=${reason}&next=${next}`);
 }
 
 export async function apiRequest<T = unknown>(path: string, options: ApiRequestOptions = {}): Promise<T> {
@@ -148,7 +178,13 @@ export async function apiRequest<T = unknown>(path: string, options: ApiRequestO
 
   const isAuthCall = path.includes('/authentication/');
   if (response.status === 401 && !skipRefresh && !isAuthCall && typeof window !== 'undefined') {
-    if (await refreshSession()) response = await fetch(url, init);
+    const refreshed = await refreshSessionStatus();
+    if (refreshed === 'ok') {
+      response = await fetch(url, init);
+    } else if (refreshed === 'expired') {
+      // Session is gone (not just a backend hiccup) → sign out and go to /sign-in.
+      redirectToLogout('expired');
+    }
   }
 
   if (!response.ok) {

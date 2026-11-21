@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.scss';
+import './styles.scss';
 import { Inter as FontSans } from 'next/font/google';
 import { cn } from '@/app/_components/utils';
 import { ToastProvider } from './_components/shared/toast-provider';

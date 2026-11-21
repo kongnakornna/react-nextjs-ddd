@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
+import { SessionKeeper } from '@/app/_components/auth/session-keeper';
 import { ThemeBuilder } from '@/app/_components/auth/theme-builder';
 import { useI18n } from '@/src/core/services/i18n.service';
 import { useTheme } from '@/src/core/services/theme.service';
@@ -42,6 +43,7 @@ export function TablerLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
       {pathname.startsWith('/settings') && <ThemeBuilder />}
+      <SessionKeeper />
     </>
   );
 }

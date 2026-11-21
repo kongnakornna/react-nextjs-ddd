@@ -110,7 +110,9 @@
     "logsControlReport": "제어 로그 보고서",
     "deviceReport": "디바이스 보고서",
     "home": "home",
-    "apiHealth": "API 상태"
+    "apiHealth": "API 상태",
+    "iotMonitoring": "IoT 모니터링",
+    "iotDashboard": "IoT 대시보드"
   },
   "settings": {
     "title": "설정",
@@ -570,7 +572,9 @@
     "contactAdmin": "관리자에게 문의",
     "testCredentials": "admin / P@ssw0rd로 시스템 테스트",
     "invalidCredentials": "사용자 이름 또는 비밀번호가 잘못되었습니다",
-    "validationError": "인증 오류"
+    "validationError": "인증 오류",
+    "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
+    "pleaseSignIn": "계속하려면 로그인해 주세요."
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "업데이트됨",
       "swalUpdateFailed": "업데이트 실패"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "IoT 모니터링",
+    "title": "IoT 대시보드",
+    "load": "불러오기",
+    "welcome": "IoT 개요",
+    "healthyRate": "정상 비율",
+    "normal": "정상",
+    "warning": "경고",
+    "alarm": "알람",
+    "controlsOn": "켜진 제어 장치",
+    "groups": "장치 그룹",
+    "device": "장치",
+    "value": "값",
+    "status": "상태",
+    "noAlerts": "활성 알림 없음"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "대시보드",
+      "configuration": "구성",
+      "analysisChart": "분석 차트",
+      "alarmLog": "알람 로그",
+      "alarmConfiguration": "알람 설정",
+      "schedule": "일정",
+      "controlDevice": "장치 제어"
+    },
+    "devices": "개 장치",
+    "noDeviceData": "장치 데이터가 없습니다",
+    "noDevice": "장치 없음",
+    "settings": "설정",
+    "mainDoor": "현관문",
+    "cardOpacity": "카드 불투명도",
+    "screenBrightness": "화면 밝기",
+    "jsonPreview": "JSON 미리보기",
+    "reset": "초기화",
+    "save": "저장",
+    "saving": "저장 중...",
+    "loading": "대시보드 불러오는 중...",
+    "refresh": "새로고침",
+    "dragPoint": "지점 끌기",
+    "turnedOn": "{name} 켜짐",
+    "turnedOff": "{name} 꺼짐",
+    "controlFailed": "{name} 제어 실패",
+    "saved": "저장됨",
+    "saveFailed": "저장 실패",
+    "jsonCopied": "JSON 복사됨",
+    "copyFailed": "복사 실패"
+  },
+  "iotLayout": {
+    "overview": "개요",
+    "profile": "프로필",
+    "historyLog": "기록 로그",
+    "settings": "설정",
+    "logout": "로그아웃",
+    "logoutConfirm": "로그아웃하시겠습니까?",
+    "cancel": "취소",
+    "userMenu": "사용자 메뉴 열기"
   }
 }

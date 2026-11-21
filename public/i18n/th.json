@@ -110,7 +110,9 @@
     "logsControlReport": "รายงานบันทึกและควบคุม",
     "deviceReport": "รายงานอุปกรณ์",
     "home": "หน้าแรก",
-    "apiHealth": "สุขภาพ API"
+    "apiHealth": "สุขภาพ API",
+    "iotMonitoring": "ติดตาม IoT",
+    "iotDashboard": "แดชบอร์ด IoT"
   },
   "settings": {
     "title": "ตั้งค่า",
@@ -597,7 +599,9 @@
     "contactAdmin": "ติดต่อผู้ดูแลระบบ",
     "testCredentials": "ใช้ admin / P@ssw0rd เพื่อทดสอบระบบ",
     "invalidCredentials": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
-    "validationError": "ข้อผิดพลาดการตรวจสอบข้อมูล"
+    "validationError": "ข้อผิดพลาดการตรวจสอบข้อมูล",
+    "sessionExpired": "เซสชันหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง",
+    "pleaseSignIn": "กรุณาเข้าสู่ระบบเพื่อใช้งานต่อ"
   },
   "auth": {
     "forgotPassword": {
@@ -1745,5 +1749,63 @@
       "swalUpdated": "อัปเดตสำเร็จ",
       "swalUpdateFailed": "อัปเดตไม่สำเร็จ"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "ติดตาม IoT",
+    "title": "แดชบอร์ด IoT",
+    "load": "โหลด",
+    "welcome": "ภาพรวม IoT",
+    "healthyRate": "อัตราปกติ",
+    "normal": "ปกติ",
+    "warning": "เตือน",
+    "alarm": "แจ้งเหตุ",
+    "controlsOn": "อุปกรณ์ควบคุมที่เปิด",
+    "groups": "กลุ่มอุปกรณ์",
+    "device": "อุปกรณ์",
+    "value": "ค่า",
+    "status": "สถานะ",
+    "noAlerts": "ไม่มีการแจ้งเตือน"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "แดชบอร์ด",
+      "configuration": "ตั้งค่าหน้าจอ",
+      "analysisChart": "กราฟวิเคราะห์",
+      "alarmLog": "บันทึกการแจ้งเตือน",
+      "alarmConfiguration": "ตั้งค่าการแจ้งเตือน",
+      "schedule": "ตั้งเวลา",
+      "controlDevice": "ควบคุมอุปกรณ์"
+    },
+    "devices": "อุปกรณ์",
+    "noDeviceData": "ไม่มีข้อมูลอุปกรณ์",
+    "noDevice": "ไม่มีอุปกรณ์",
+    "settings": "ตั้งค่า",
+    "mainDoor": "ประตูหลัก",
+    "cardOpacity": "ความทึบของการ์ด",
+    "screenBrightness": "ความสว่างหน้าจอ",
+    "jsonPreview": "ตัวอย่าง JSON",
+    "reset": "รีเซ็ต",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "loading": "กำลังโหลดแดชบอร์ด...",
+    "refresh": "รีเฟรช",
+    "dragPoint": "ลากจุด",
+    "turnedOn": "เปิด {name} แล้ว",
+    "turnedOff": "ปิด {name} แล้ว",
+    "controlFailed": "ควบคุม {name} ไม่สำเร็จ",
+    "saved": "บันทึกแล้ว",
+    "saveFailed": "บันทึกไม่สำเร็จ",
+    "jsonCopied": "คัดลอก JSON แล้ว",
+    "copyFailed": "คัดลอกไม่สำเร็จ"
+  },
+  "iotLayout": {
+    "overview": "ภาพรวม",
+    "profile": "โปรไฟล์",
+    "historyLog": "ประวัติการใช้งาน",
+    "settings": "ตั้งค่า",
+    "logout": "ออกจากระบบ",
+    "logoutConfirm": "ต้องการออกจากระบบหรือไม่?",
+    "cancel": "ยกเลิก",
+    "userMenu": "เปิดเมนูผู้ใช้"
   }
 }

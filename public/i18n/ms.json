@@ -110,7 +110,9 @@
     "logsControlReport": "Laporan Log Kawalan",
     "deviceReport": "Laporan Peranti",
     "home": "home",
-    "apiHealth": "Kesihatan API"
+    "apiHealth": "Kesihatan API",
+    "iotMonitoring": "Pemantauan IoT",
+    "iotDashboard": "Papan Pemuka IoT"
   },
   "settings": {
     "title": "Tetapan",
@@ -570,7 +572,9 @@
     "contactAdmin": "Hubungi Pentadbir",
     "testCredentials": "Gunakan admin / P@ssw0rd untuk menguji sistem",
     "invalidCredentials": "Nama pengguna atau kata laluan tidak sah",
-    "validationError": "Ralat Pengesahan"
+    "validationError": "Ralat Pengesahan",
+    "sessionExpired": "Sesi anda telah tamat. Sila log masuk semula.",
+    "pleaseSignIn": "Sila log masuk untuk meneruskan."
   },
   "auth": {
     "forgotPassword": {
@@ -1700,5 +1704,63 @@
       "swalUpdated": "Dikemas Kini",
       "swalUpdateFailed": "Kemas Kini Gagal"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "Pemantauan IoT",
+    "title": "Papan Pemuka IoT",
+    "load": "Muat",
+    "welcome": "Gambaran IoT",
+    "healthyRate": "Kadar normal",
+    "normal": "Normal",
+    "warning": "Amaran",
+    "alarm": "Penggera",
+    "controlsOn": "Kawalan IO HIDUP",
+    "groups": "Kumpulan peranti",
+    "device": "Peranti",
+    "value": "Nilai",
+    "status": "Status",
+    "noAlerts": "Tiada amaran aktif"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "Papan Pemuka",
+      "configuration": "Konfigurasi",
+      "analysisChart": "Carta Analisis",
+      "alarmLog": "Log Penggera",
+      "alarmConfiguration": "Konfigurasi Penggera",
+      "schedule": "Jadual",
+      "controlDevice": "Kawal Peranti"
+    },
+    "devices": "peranti",
+    "noDeviceData": "Tiada data peranti",
+    "noDevice": "Tiada peranti",
+    "settings": "Tetapan",
+    "mainDoor": "Pintu Utama",
+    "cardOpacity": "Kelegapan Kad",
+    "screenBrightness": "Kecerahan Skrin",
+    "jsonPreview": "Pratonton JSON",
+    "reset": "Tetapkan Semula",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "loading": "Memuatkan papan pemuka...",
+    "refresh": "Muat semula",
+    "dragPoint": "seret titik",
+    "turnedOn": "{name} dihidupkan",
+    "turnedOff": "{name} dimatikan",
+    "controlFailed": "Gagal mengawal {name}",
+    "saved": "Disimpan",
+    "saveFailed": "Gagal menyimpan",
+    "jsonCopied": "JSON disalin",
+    "copyFailed": "Gagal menyalin"
+  },
+  "iotLayout": {
+    "overview": "Gambaran",
+    "profile": "Profil",
+    "historyLog": "Log sejarah",
+    "settings": "Tetapan",
+    "logout": "Log keluar",
+    "logoutConfirm": "Adakah anda mahu log keluar?",
+    "cancel": "Batal",
+    "userMenu": "Buka menu pengguna"
   }
 }

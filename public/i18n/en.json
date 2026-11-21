@@ -110,7 +110,9 @@
     "logsControlReport": "Logs Control Report",
     "deviceReport": "Device Report",
     "home": "Home",
-    "apiHealth": "API Health"
+    "apiHealth": "API Health",
+    "iotMonitoring": "IoT Monitoring",
+    "iotDashboard": "IoT Dashboard"
   },
   "settings": {
     "title": "Settings",
@@ -597,7 +599,9 @@
     "contactAdmin": "Contact administrator",
     "testCredentials": "Use admin / P@ssw0rd to test the system",
     "invalidCredentials": "Invalid username or password",
-    "validationError": "Validation Error"
+    "validationError": "Validation Error",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "pleaseSignIn": "Please sign in to continue."
   },
   "auth": {
     "forgotPassword": {
@@ -1743,5 +1747,63 @@
       "swalUpdated": "Updated",
       "swalUpdateFailed": "Update Failed"
     }
+  },
+  "iotDashboard": {
+    "pretitle": "IoT Monitoring",
+    "title": "IoT Dashboard",
+    "load": "Load",
+    "welcome": "IoT overview",
+    "healthyRate": "Healthy rate",
+    "normal": "Normal",
+    "warning": "Warning",
+    "alarm": "Alarm",
+    "controlsOn": "IO Control ON",
+    "groups": "Device groups",
+    "device": "Device",
+    "value": "Value",
+    "status": "Status",
+    "noAlerts": "No active alerts"
+  },
+  "smarthome": {
+    "menu": {
+      "dashboard": "Dashboard",
+      "configuration": "Configuration",
+      "analysisChart": "Analysis Chart",
+      "alarmLog": "Alarm Log",
+      "alarmConfiguration": "Alarm Configuration",
+      "schedule": "Schedule",
+      "controlDevice": "Control Device"
+    },
+    "devices": "devices",
+    "noDeviceData": "No device data available",
+    "noDevice": "No device",
+    "settings": "Settings",
+    "mainDoor": "Main Door",
+    "cardOpacity": "Card Opacity",
+    "screenBrightness": "Screen Brightness",
+    "jsonPreview": "JSON Preview",
+    "reset": "Reset",
+    "save": "Save",
+    "saving": "Saving...",
+    "loading": "Loading Dashboard...",
+    "refresh": "Refresh",
+    "dragPoint": "drag point",
+    "turnedOn": "{name} turned ON",
+    "turnedOff": "{name} turned OFF",
+    "controlFailed": "Failed to control {name}",
+    "saved": "Saved",
+    "saveFailed": "Save failed",
+    "jsonCopied": "JSON copied",
+    "copyFailed": "Copy failed"
+  },
+  "iotLayout": {
+    "overview": "Overview",
+    "profile": "Profile",
+    "historyLog": "History log",
+    "settings": "Settings",
+    "logout": "Logout",
+    "logoutConfirm": "Do you want to sign out?",
+    "cancel": "Cancel",
+    "userMenu": "Open user menu"
   }
 }
