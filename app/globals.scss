@@ -1,5 +1,7 @@
 @import '@tabler/core/scss/tabler';
 @import '@tabler/core/scss/tabler-vendors';
+// Theme Builder rules: [data-bs-theme-primary|font|radius|base] (not included in tabler.scss)
+@import '@tabler/core/scss/tabler-themes';
 
 @tailwind base;
 @tailwind components;

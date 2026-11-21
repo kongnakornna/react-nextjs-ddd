@@ -606,6 +606,8 @@ NEXT_PUBLIC_DEMO=false
 ### 4.4 Development Server
 
 ```bash
+npm install --include=dev
+
 # Default (in-file persistence)
 npm run dev
 # → http://localhost:3000

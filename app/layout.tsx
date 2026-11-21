@@ -40,6 +40,7 @@ export default async function RootLayout({
     var base = localStorage.getItem('tabler-themeBase') || 'gray';
     el.classList.remove('theme-slate','theme-gray','theme-zinc','theme-neutral','theme-stone');
     el.classList.add('theme-' + base);
+    el.setAttribute('data-bs-theme-base', base);
     var primary = localStorage.getItem('tabler-themePrimary') || 'blue';
     el.setAttribute('data-bs-theme-primary', primary);
     var font = localStorage.getItem('tabler-themeFont') || 'sans-serif';
