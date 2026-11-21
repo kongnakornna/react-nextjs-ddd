@@ -1114,9 +1114,7 @@ mkdir -p src/features/{name}/presentation/pages
 | Features | 25 modules | 25 modules |
 
 ---
-
 *Developed by Kongnakorn Jantakun — IoT Monitoring Platform*
-
 ---
 
 ## 📄 เอกสารเพิ่มเติม

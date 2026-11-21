@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-
 import { getInjection } from '@/di/container';
+
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * @description The route's wire contract: `{ error }` on failure,

@@ -25,8 +25,6 @@
 
 
 
-
-
 1.C:\github\react-nextjs-ddd\README.md
 2.วิเคราะห์ โครงสร้าง
  นำมา update เอกสาร C:\github\react-nextjs-ddd\docs\architecture-react-nextjs-ddd.md
