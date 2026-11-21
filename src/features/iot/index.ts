@@ -1,11 +1,7 @@
 export * from './domain/entities/device.entity';
-export * from './domain/repositories/device.repository';
-export * from './domain/use-cases/list-devices.use-case';
-export * from './domain/use-cases/create-device.use-case';
-export * from './domain/use-cases/get-device.use-case';
-export * from './domain/use-cases/update-device.use-case';
-export * from './data/datasources/device.api.datasource';
-export * from './data/dtos/device.dto';
-export * from './data/repositories/device.repository.impl';
-export * from './presentation/pages/device-list';
-export * from './presentation/pages/device-detail';
+export * from './domain/repositories/iot.repository';
+export * from './domain/use-cases/iot.use-cases';
+export * from './data/datasources/iot.api.datasource';
+export * from './data/dtos/iot.dto';
+export * from './data/repositories/iot.repository.impl';
+export { iot } from './presentation/iot.container';

@@ -1,111 +1,82 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { MonitoringDevice, DashboardModule, DASHBOARD_MODULES } from '../../domain/entities/monitoring-device.entity';
-import { ListMonitoringDevicesUseCase } from '../../domain/use-cases/list-monitoring-devices.use-case';
+import Link from 'next/link';
+
+import { useI18n } from '@/src/core/services/i18n.service';
+import { ApiErrorView } from '@/src/core/ui/api-unavailable';
+import { tf } from '@/src/core/ui/tf';
+import { useAsync } from '@/src/core/ui/use-async';
 import { MonitoringApiDataSource } from '../../data/datasources/monitoring.api.datasource';
+import { MonitoringRepositoryImpl } from '../../data/repositories/monitoring.repository.impl';
+import { DASHBOARD_MODULES, type DashboardModule } from '../../domain/entities/monitoring-device.entity';
+import { ListMonitoringDevicesUseCase } from '../../domain/use-cases/list-monitoring-devices.use-case';
 
-interface MonitoringDashboardPageProps {
-  module: DashboardModule;
-}
+const listDevices = new ListMonitoringDevicesUseCase(new MonitoringRepositoryImpl(new MonitoringApiDataSource()));
 
-export default function MonitoringDashboardPage({ module }: MonitoringDashboardPageProps) {
-  const [devices, setDevices] = useState<MonitoringDevice[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const moduleInfo = DASHBOARD_MODULES.find(m => m.key === module);
-
-  useEffect(() => {
-    loadDevices();
-  }, [module]);
-
-  const loadDevices = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const datasource = new MonitoringApiDataSource();
-      const result = await new ListMonitoringDevicesUseCase(datasource).execute(module);
-      setDevices(result);
-    } catch (err) {
-      setError('Failed to load devices');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onlineCount = devices.filter(d => d.status).length;
-  const offlineCount = devices.filter(d => !d.status).length;
+/**
+ * Module dashboards (smarthome, smartcity, industry, smartsolarfarm).
+ * Angular shows "Coming soon" for these; the device list endpoint
+ * `/monitoring/{module}/devices` is not on FastAPI yet.
+ */
+export default function MonitoringDashboardPage({ module }: { module: DashboardModule }) {
+  const { t } = useI18n();
+  const info = DASHBOARD_MODULES.find((m) => m.key === module);
+  const devices = useAsync(() => listDevices.execute(module), [module]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{moduleInfo?.label ?? module}</h1>
-        <p className="text-gray-500 mt-1">{moduleInfo?.description}</p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <div className="bg-white overflow-hidden shadow rounded-lg p-5">
-          <dt className="text-sm font-medium text-gray-500 truncate">Total Devices</dt>
-          <dd className="mt-1 text-3xl font-semibold text-gray-900">{devices.length}</dd>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg p-5">
-          <dt className="text-sm font-medium text-gray-500 truncate">Online</dt>
-          <dd className="mt-1 text-3xl font-semibold text-green-600">{onlineCount}</dd>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg p-5">
-          <dt className="text-sm font-medium text-gray-500 truncate">Offline</dt>
-          <dd className="mt-1 text-3xl font-semibold text-red-600">{offlineCount}</dd>
-        </div>
-      </div>
-
-      {loading && <div className="flex items-center justify-center h-32">Loading devices...</div>}
-      {error && <div className="text-red-500 p-4">{error}</div>}
-
-      {!loading && !error && (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b">
-            <h2 className="text-lg font-medium">Devices</h2>
+    <>
+      <div className="page-header d-print-none mb-3">
+        <div className="row g-2 align-items-center">
+          <div className="col">
+            <div className="page-pretitle">{t('monitoring.title')}</div>
+            <h1 className="page-title">{tf(t, `monitoring.modules.${module}`, info?.label ?? module)}</h1>
+            {info?.description && <div className="text-secondary mt-1">{info.description}</div>}
           </div>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {devices.map((device) => (
-                <tr key={device.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{device.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{device.module}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{device.location}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${device.status ? 'bg-green-500' : 'bg-red-500'}`} />
-                      <span className={`text-sm ${device.status ? 'text-green-700' : 'text-red-700'}`}>
-                        {device.status ? 'Online' : 'Offline'}
+        </div>
+      </div>
+
+      {devices.error ? (
+        <div className="card">
+          <div className="card-body">
+            <ApiErrorView error={devices.error} />
+          </div>
+        </div>
+      ) : devices.loading ? (
+        <div className="text-center py-5"><div className="spinner-border text-primary" role="status" /></div>
+      ) : (
+        <div className="card">
+          <div className="table-responsive">
+            <table className="table table-vcenter card-table">
+              <thead>
+                <tr><th>{t('iot.deviceName')}</th><th>{t('iot.location')}</th><th>{t('iot.status')}</th></tr>
+              </thead>
+              <tbody>
+                {(devices.data ?? []).map((d) => (
+                  <tr key={d.id}>
+                    <td>{d.name}</td>
+                    <td className="text-secondary">{d.location}</td>
+                    <td>
+                      <span className={`badge ${d.status ? 'bg-green text-green-fg' : 'bg-red text-red-fg'}`}>
+                        {d.status ? t('iot.onlineStatus') : t('iot.offlineStatus')}
                       </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {devices.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">No devices found</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <h3 className="text-lg font-medium text-gray-700">Coming Soon</h3>
-        <p className="text-gray-500 mt-2">Advanced analytics, real-time charts, and alert configuration are under development.</p>
+      <div className="card mt-3">
+        <div className="card-body text-center py-4">
+          <h3>{tf(t, `monitoring.modules.${module}`, info?.label ?? module)} Dashboard</h3>
+          <p className="text-secondary">{tf(t, 'monitoring.comingSoon', 'Coming soon...')}</p>
+          <Link href="/monitoring/smartmonitor" className="btn btn-outline-primary">
+            {tf(t, 'monitoring.modules.smartmonitor', 'SmartMonitor')} →
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

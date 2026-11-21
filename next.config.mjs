@@ -20,6 +20,12 @@ const nextConfig = {
           source: '/api/:path*',
           destination: `${API_TARGET}/api/:path*`,
         },
+        // FastAPI routes without an /api prefix (/iot/*, /llm/*, /health/).
+        // A separate prefix avoids clashing with Next pages like /iot/devices.
+        {
+          source: '/backend/:path*',
+          destination: `${API_TARGET}/:path*`,
+        },
       ],
       fallback: [],
     };

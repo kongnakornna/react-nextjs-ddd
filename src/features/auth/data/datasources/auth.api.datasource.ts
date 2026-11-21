@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from '../../../../core/config/api.config';
-import { environment } from '../../../../core/config/environment';
+import { API_PREFIX, apiRequest } from '../../../../core/http/api-client';
 import { LoginRequestDto } from '../dtos/login-request.dto';
 import { LoginResponseDto } from '../dtos/login-response.dto';
 import { SignInRequestDto } from '../dtos/signin-request.dto';
@@ -12,87 +12,30 @@ import { RoleResponseDto, RoleListResponseDto, CreateRoleRequestDto, UpdateRoleR
 import { PermissionListResponseDto } from '../dtos/permission.dto';
 import { UserListParams } from '../../domain/repositories/auth.repository';
 
-// Backend routes are versioned: /api/v1/... (e.g. /api/v1/user/me)
-const API_PREFIX = '/api/v1';
-
+/**
+ * HTTP goes through the shared client (src/core/http/api-client.ts):
+ * cookie auth, envelope unwrap (`details.data`), `errors_th` messages,
+ * refresh-and-retry on 401, proxy vs direct URL (NEXT_PUBLIC_USE_PROXY).
+ * Errors are ApiError with `.status` (401/422/…).
+ */
 function getBaseUrl(): string {
-  return environment.useProxy ? API_PREFIX : `${environment.apiTargetUrl}${API_PREFIX}`;
+  return API_PREFIX;
 }
 
-/**
- * fastapiiot envelope:
- *   success: { code, method, path, timestamp, details: { message, data } }
- *   error:   { code, ..., details: { message, data: { errors, errors_th, code? } } }
- * Every endpoint seen so far (login included) uses the envelope; OpenAPI shows only
- * the inner schema. Unwrap defensively — only when the envelope is present.
- */
-function unwrap(body: any): any {
-  if (body && typeof body === 'object' && body.details && 'data' in body.details) {
-    return body.details.data;
-  }
-  return body;
-}
+type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    const body: any = await response.json().catch(() => ({}));
-    const data = body?.details?.data;
-    const serverMsg =
-      data?.errors_th || data?.errors || body?.details?.message ||
-      body?.error?.msg || body?.msg || body?.message ||
-      (Array.isArray(body?.detail) ? body.detail.map((d: any) => d?.msg).join(', ') : body?.detail);
-    const status = response.status;
-    let errorMessage = serverMsg || `Server Error (${status})`;
-
-    if (!serverMsg) {
-      if (status === 401) errorMessage = 'ไม่ได้รับอนุญาต กรุณาเข้าสู่ระบบอีกครั้ง';
-      else if (status === 403) errorMessage = 'คุณไม่มีสิทธิ์เข้าถึง';
-      else if (status === 404) errorMessage = 'ไม่พบข้อมูลที่ร้องขอ';
-    }
-
-    const appError = new Error(errorMessage) as Error & { status?: number };
-    appError.status = status;
-    throw appError;
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-  const contentType = response.headers.get('content-type');
-  if (contentType?.includes('text/plain')) {
-    return response.text() as unknown as T;
-  }
-  return unwrap(await response.json().catch(() => undefined));
-}
-
-/**
- * Auth is cookie-based: the backend sets HttpOnly `access_token` / `refresh_token`
- * cookies on login. No Authorization header — after a refresh the old access
- * token is revoked immediately, so a token cached in localStorage would be stale.
- */
+/** Adapter for the RequestInit-style calls below (`body` is a JSON string). */
 async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const headers: Record<string, string> = {
-    'Accept': 'application/json',
-    ...(options.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
-    ...(options.headers as Record<string, string> || {}),
-  };
-  const response = await fetch(url, { ...options, headers, credentials: 'include' });
-  return handleResponse<T>(response);
+  const body = typeof options.body === 'string' ? JSON.parse(options.body) : undefined;
+  return apiRequest<T>(url, { method: (options.method as Method) ?? 'GET', body });
 }
 
-const requestNoInterceptor = request;
+async function requestNoInterceptor<T>(url: string, options: RequestInit = {}): Promise<T> {
+  return apiRequest<T>(url, { method: (options.method as Method) ?? 'GET', skipRefresh: true });
+}
 
 async function requestForm<T>(url: string, form: Record<string, string>): Promise<T> {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams(form).toString(),
-    credentials: 'include',
-  });
-  return handleResponse<T>(response);
+  return apiRequest<T>(url, { method: 'POST', form, skipRefresh: true });
 }
 
 function toLoginResponse(raw: any): LoginResponseDto {

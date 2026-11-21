@@ -1,40 +1,126 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
 
-interface Device {
-  id: string;
-  name: string;
-  status: string;
-  latitude?: number;
-  longitude?: number;
-}
+import { useI18n } from '@/src/core/services/i18n.service';
+import { ApiErrorView } from '@/src/core/ui/api-unavailable';
+import { tf } from '@/src/core/ui/tf';
+import { useAsync } from '@/src/core/ui/use-async';
+import type { MonitorDevice } from '../../domain/entities/device.entity';
+import { iot } from '../iot.container';
 
+/**
+ * Port of icmonangular iot/presentation/pages/device-map.
+ * Angular had a map placeholder + sample list; here devices come from
+ * GET /iot/monitordevicegroup and are grouped by location. FastAPI gives
+ * no per-device coordinates in this list (only /iot/devicestatus has lat/lng),
+ * so the map area stays a placeholder like in Angular.
+ */
 export default function DeviceMapPage() {
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { t } = useI18n();
+  const groups = useAsync(() => iot.getMonitorDeviceGroup.execute(), []);
+  const [selected, setSelected] = useState<string | null>(null);
 
-  useEffect(() => { setLoading(false); }, []);
+  const byLocation = useMemo(() => {
+    const map = new Map<string, MonitorDevice[]>();
+    for (const g of groups.data?.groups ?? []) {
+      for (const d of g.devices) {
+        const key = d.locationName || '—';
+        if (!map.has(key)) map.set(key, []);
+        // de-duplicate the same device listed in several groups
+        if (!map.get(key)!.some((x) => x.deviceId === d.deviceId)) map.get(key)!.push(d);
+      }
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [groups.data]);
 
-  if (loading) return <div className="flex items-center justify-center h-64">กำลังโหลด...</div>;
+  const visible = selected ? byLocation.filter(([loc]) => loc === selected) : byLocation;
+  const deviceCount = byLocation.reduce((n, [, list]) => n + list.length, 0);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">แผนที่อุปกรณ์</h1>
-        <p className="text-muted-foreground">แสดงตำแหน่งอุปกรณ์ IoT ทั้งหมด</p>
-      </div>
-      <div className="card">
-        <div className="card-body" style={{ minHeight: 500 }}>
-          <div className="d-flex align-items-center justify-content-center h-100">
-            <div className="text-center text-muted">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="icon mb-2"><path d="M9 20l-5.447 -2.724a1 1 0 0 1 -.553 -.894v-6.552a1 1 0 0 1 .553 -.894l4.887 -2.443a1 1 0 0 1 .894 0l4.887 2.443a1 1 0 0 1 .553 .894v6.552a1 1 0 0 1 -.553 .894l-4.887 2.443a1 1 0 0 1 -.894 0z" /><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M12 2l0 3" /><path d="M18.36 6.64l-1.06 1.06" /><path d="M21 12h-3" /><path d="M18.36 17.36l-1.06 -1.06" /><path d="M12 17l0 3" /><path d="M5.64 17.36l1.06 -1.06" /><path d="M3 12h3" /><path d="M5.64 6.64l1.06 1.06" /></svg>
-              <p>แผนที่จะแสดงตำแหน่งอุปกรณ์ IoT<br />เมื่อมีการเชื่อมต่อ Google Maps หรือ OpenStreetMap API</p>
-              <p className="mt-2"><strong>{devices.length}</strong> อุปกรณ์ทั้งหมด</p>
-            </div>
+    <>
+      <div className="page-header d-print-none mb-3">
+        <div className="row g-2 align-items-center">
+          <div className="col">
+            <h1 className="page-title">{t('iot.mapTitle')}</h1>
+            <div className="text-secondary mt-1">{t('iot.mapSubtitle')}</div>
           </div>
         </div>
       </div>
-    </div>
+
+      {groups.error ? (
+        <ApiErrorView error={groups.error} />
+      ) : (
+        <div className="row g-3">
+          <div className="col-lg-4">
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">{t('iot.location')} ({byLocation.length})</h3>
+              </div>
+              <div className="list-group list-group-flush">
+                <button
+                  type="button"
+                  className={`list-group-item list-group-item-action d-flex justify-content-between${selected === null ? ' active' : ''}`}
+                  onClick={() => setSelected(null)}
+                >
+                  <span>{tf(t, 'common.all', 'All')}</span>
+                  <span className="badge bg-secondary-lt">{deviceCount}</span>
+                </button>
+                {byLocation.map(([loc, list]) => (
+                  <button
+                    key={loc}
+                    type="button"
+                    className={`list-group-item list-group-item-action d-flex justify-content-between${selected === loc ? ' active' : ''}`}
+                    onClick={() => setSelected(loc)}
+                  >
+                    <span className="text-truncate">{loc}</span>
+                    <span className="badge bg-secondary-lt">{list.length}</span>
+                  </button>
+                ))}
+                {groups.loading && <div className="list-group-item text-secondary">{t('iot.loading')}</div>}
+              </div>
+            </div>
+          </div>
+
+          <div className="col-lg-8">
+            {visible.map(([loc, list]) => (
+              <div className="card mb-3" key={loc}>
+                <div className="card-header">
+                  <h3 className="card-title">{loc}</h3>
+                  <div className="card-actions text-secondary small">{list.length} {t('iot.items')}</div>
+                </div>
+                <div className="list-group list-group-flush">
+                  {list.map((d) => (
+                    <div className="list-group-item" key={d.deviceId}>
+                      <div className="row align-items-center g-2">
+                        <div className="col-auto">
+                          <span className={`avatar ${d.status === 1 ? 'bg-green-lt' : 'bg-red-lt'}`}>
+                            {(d.deviceName || '?').charAt(0)}
+                          </span>
+                        </div>
+                        <div className="col text-truncate">
+                          <Link href={`/iot/devices/${d.deviceId}`} className="text-reset d-block">{d.deviceName}</Link>
+                          <div className="text-secondary text-truncate small">{d.typeName} · {d.measurement}</div>
+                        </div>
+                        <div className="col-auto text-end">
+                          <div style={{ fontVariantNumeric: 'tabular-nums' }}>{d.valueData} {d.unit}</div>
+                          <span className={`badge ${d.status === 1 ? 'bg-green text-green-fg' : 'bg-red text-red-fg'}`}>
+                            {d.status === 1 ? t('iot.onlineStatus') : t('iot.offlineStatus')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {!groups.loading && visible.length === 0 && (
+              <div className="card"><div className="card-body text-center text-secondary">{t('iot.noSensorData')}</div></div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

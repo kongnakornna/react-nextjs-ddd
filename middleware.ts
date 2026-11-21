@@ -66,6 +66,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Skip static files in /public (img, assets, i18n, ...) so they are not redirected to /sign-in
-    '/((?!api|_next/static|_next/image|img/|assets/|i18n|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|json|woff2?|ttf|map)$).*)',
+    '/((?!api|backend/|_next/static|_next/image|img/|assets/|i18n|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js|json|woff2?|ttf|map)$).*)',
   ],
 };
