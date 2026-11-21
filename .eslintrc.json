@@ -58,6 +58,16 @@
         "mode": "full",
         "type": "types",
         "pattern": ["src/types/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "core",
+        "pattern": ["src/core/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "features",
+        "pattern": ["src/features/**/*"]
       }
     ]
   },
@@ -71,7 +81,15 @@
         "rules": [
           {
             "from": "web",
-            "allow": ["web", "entities", "di"]
+            "allow": ["web", "entities", "di", "core", "features"]
+          },
+          {
+            "from": "core",
+            "allow": ["core"]
+          },
+          {
+            "from": "features",
+            "allow": ["features", "core"]
           },
           {
             "from": "api",

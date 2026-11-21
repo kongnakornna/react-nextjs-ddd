@@ -48,8 +48,9 @@ export class AuthRepositoryImpl implements IAuthRepository {
 
   async refreshToken(): Promise<AuthResponse> {
     const dto = await this.dataSource.refreshToken();
-    localStorage.setItem(APP_CONSTANTS.TOKEN_KEY, dto.accessToken);
-    localStorage.setItem(APP_CONSTANTS.REFRESH_TOKEN_KEY, dto.refreshToken);
+    // Backend rotates HttpOnly cookies only; the body carries no tokens.
+    if (dto.accessToken) localStorage.setItem(APP_CONSTANTS.TOKEN_KEY, dto.accessToken);
+    if (dto.refreshToken) localStorage.setItem(APP_CONSTANTS.REFRESH_TOKEN_KEY, dto.refreshToken);
     const tokens = this.mapToTokens(dto);
     const userDto = await this.dataSource.getCurrentUser();
     return { ...tokens, user: this.mapToUser(userDto) };

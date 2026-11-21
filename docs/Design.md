@@ -19,7 +19,7 @@
         2.วาดโครสร้าง folder
         3.วาด Flow การทำงาน
         4.การติดตั้ง
-        5.การ  test  
-        6.การ build  
+        5.การ  test
+        6.การ build
         7.การ deploy docker
 

@@ -12,55 +12,122 @@ import { RoleResponseDto, RoleListResponseDto, CreateRoleRequestDto, UpdateRoleR
 import { PermissionListResponseDto } from '../dtos/permission.dto';
 import { UserListParams } from '../../domain/repositories/auth.repository';
 
+// Backend routes are versioned: /api/v1/... (e.g. /api/v1/user/me)
+const API_PREFIX = '/api/v1';
+
 function getBaseUrl(): string {
-  return environment.useProxy ? '/api' : `${environment.apiTargetUrl}/api`;
+  return environment.useProxy ? API_PREFIX : `${environment.apiTargetUrl}${API_PREFIX}`;
+}
+
+/**
+ * fastapiiot envelope:
+ *   success: { code, method, path, timestamp, details: { message, data } }
+ *   error:   { code, ..., details: { message, data: { errors, errors_th, code? } } }
+ * Some endpoints (e.g. login) return the schema body directly — unwrap only when
+ * the envelope is present.
+ */
+function unwrap(body: any): any {
+  if (body && typeof body === 'object' && body.details && 'data' in body.details) {
+    return body.details.data;
+  }
+  return body;
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const serverMsg = (body as any)?.error?.msg || (body as any)?.msg || (body as any)?.message;
+    const body: any = await response.json().catch(() => ({}));
+    const data = body?.details?.data;
+    const serverMsg =
+      data?.errors_th || data?.errors || body?.details?.message ||
+      body?.error?.msg || body?.msg || body?.message ||
+      (Array.isArray(body?.detail) ? body.detail.map((d: any) => d?.msg).join(', ') : body?.detail);
     const status = response.status;
     let errorMessage = serverMsg || `Server Error (${status})`;
 
-    if (status === 401) errorMessage = 'ไม่ได้รับอนุญาต กรุณาเข้าสู่ระบบอีกครั้ง';
-    else if (status === 403) errorMessage = 'คุณไม่มีสิทธิ์เข้าถึง';
-    else if (status === 404) errorMessage = 'ไม่พบข้อมูลที่ร้องขอ';
+    if (!serverMsg) {
+      if (status === 401) errorMessage = 'ไม่ได้รับอนุญาต กรุณาเข้าสู่ระบบอีกครั้ง';
+      else if (status === 403) errorMessage = 'คุณไม่มีสิทธิ์เข้าถึง';
+      else if (status === 404) errorMessage = 'ไม่พบข้อมูลที่ร้องขอ';
+    }
 
     const appError = new Error(errorMessage) as Error & { status?: number };
     appError.status = status;
     throw appError;
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
   const contentType = response.headers.get('content-type');
   if (contentType?.includes('text/plain')) {
     return response.text() as unknown as T;
   }
-  return response.json();
+  return unwrap(await response.json().catch(() => undefined));
 }
 
+/**
+ * Auth is cookie-based: the backend sets HttpOnly `access_token` / `refresh_token`
+ * cookies on login. No Authorization header — after a refresh the old access
+ * token is revoked immediately, so a token cached in localStorage would be stale.
+ */
 async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     'Accept': 'application/json',
+    ...(options.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
     ...(options.headers as Record<string, string> || {}),
   };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
   const response = await fetch(url, { ...options, headers, credentials: 'include' });
   return handleResponse<T>(response);
 }
 
-async function requestNoInterceptor<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    ...(options.headers as Record<string, string> || {}),
-  };
-  const response = await fetch(url, { ...options, headers, credentials: 'include' });
+const requestNoInterceptor = request;
+
+async function requestForm<T>(url: string, form: Record<string, string>): Promise<T> {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams(form).toString(),
+    credentials: 'include',
+  });
   return handleResponse<T>(response);
+}
+
+function toLoginResponse(raw: any): LoginResponseDto {
+  const expiresAt = raw?.token_info?.expires_at ? Date.parse(raw.token_info.expires_at) : NaN;
+  return {
+    accessToken: raw?.access_token ?? '',
+    refreshToken: raw?.refresh_token ?? '',
+    tokenType: 'bearer',
+    expiresIn: Number.isFinite(expiresAt) ? Math.max(0, Math.round((expiresAt - Date.now()) / 1000)) : undefined,
+    user: raw?.info ?? null,
+  };
+}
+
+/** fastapiiot MeResponse / CreateResponse → legacy UserResponseDto shape. */
+function toUserDto(raw: any): UserResponseDto {
+  return {
+    id: raw?.id != null ? String(raw.id) : '',
+    email: raw?.email ?? '',
+    username: raw?.username ?? raw?.email ?? '',
+    role_id: raw?.role_id ?? 0,
+    role_title: raw?.role ?? undefined,
+    firstname: raw?.first_name ?? '',
+    lastname: raw?.last_name ?? '',
+    fullname: raw?.full_name ?? raw?.preferred_name ?? '',
+    mobile_number: raw?.mobile_number ?? '',
+    phone_number: raw?.phone ?? '',
+    line_id: raw?.line_id ?? '',
+    location_id: raw?.location_id ?? '',
+    status: raw?.status ?? (raw?.is_active === false ? 0 : 1),
+    is_superuser: raw?.is_superuser ?? false,
+    verified: raw?.is_verified ?? false,
+    last_sign_in: raw?.last_sign_in_at ?? '',
+    createddate: raw?.created_at ?? '',
+    updateddate: raw?.updated_at ?? '',
+  };
 }
 
 function buildParams(params?: Record<string, any>): URLSearchParams {
@@ -80,38 +147,24 @@ export class AuthApiDataSource {
     return getBaseUrl();
   }
 
+  /** OAuth2PasswordRequestFormStrict: `grant_type=password` is required (else 422). */
   async login(data: LoginRequestDto): Promise<LoginResponseDto> {
-    const raw = await request<any>(`${this.baseUrl}${API_ENDPOINTS.auth.login}`, {
-      method: 'POST',
-      body: JSON.stringify(data),
+    const raw = await requestForm<any>(`${this.baseUrl}${API_ENDPOINTS.auth.login}`, {
+      grant_type: 'password',
+      username: data.username,
+      password: data.password,
     });
-    return {
-      accessToken: raw.access_token,
-      refreshToken: raw.refresh_token,
-      expiresIn: raw.expires_in,
-      tokenType: raw.token_type,
-      user: raw.user || null,
-    };
+    return toLoginResponse(raw);
   }
 
+  /** Backend has no separate sign-in: login accepts `username` OR email. */
   async signIn(data: SignInRequestDto): Promise<LoginResponseDto> {
-    const raw = await request<any>(`${this.baseUrl}${API_ENDPOINTS.auth.signin}`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    return {
-      accessToken: raw.access_token,
-      refreshToken: raw.refresh_token,
-      expiresIn: raw.expires_in,
-      tokenType: raw.token_type,
-      user: raw.user || null,
-    };
+    return this.login({ username: data.email, password: data.password });
   }
 
   async logout(): Promise<void> {
     await request<void>(`${this.baseUrl}${API_ENDPOINTS.auth.logout}`, {
-      method: 'POST',
-      body: JSON.stringify({}),
+      method: 'DELETE',
     });
   }
 
@@ -122,11 +175,12 @@ export class AuthApiDataSource {
     });
   }
 
+  /** Rotates cookies only; the body is just `{ message }` — tokens come back empty. */
   async refreshToken(): Promise<LoginResponseDto> {
-    return requestNoInterceptor<LoginResponseDto>(`${this.baseUrl}${API_ENDPOINTS.auth.refresh}`, {
-      method: 'POST',
-      body: JSON.stringify({}),
+    const raw = await requestNoInterceptor<any>(`${this.baseUrl}${API_ENDPOINTS.auth.refresh}`, {
+      method: 'PATCH',
     });
+    return toLoginResponse(raw);
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -137,10 +191,13 @@ export class AuthApiDataSource {
   }
 
   async resetPassword(code: string, data: ResetPasswordRequestDto): Promise<void> {
-    const params = buildParams({ code });
-    await request<void>(`${this.baseUrl}${API_ENDPOINTS.auth.resetPassword}?${params.toString()}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
+    await request<void>(`${this.baseUrl}${API_ENDPOINTS.auth.resetPassword}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        code,
+        password: data.new_password,
+        confirm_password: data.confirm_password,
+      }),
     });
   }
 
@@ -161,7 +218,7 @@ export class AuthApiDataSource {
     const raw = await request<any>(`${this.baseUrl}${API_ENDPOINTS.auth.me}`, {
       method: 'GET',
     });
-    return raw?.data ?? raw;
+    return toUserDto(raw);
   }
 
   async updateProfile(data: Partial<UserResponseDto>): Promise<UserResponseDto> {
@@ -184,10 +241,21 @@ export class AuthApiDataSource {
     });
   }
 
+  /** POST /authentication/sign-up — SignUpRequest (snake_case, agree_terms required). */
   async register(data: RegisterRequestDto): Promise<void> {
-    await request<void>(`${this.baseUrl}${API_ENDPOINTS.auth.register}`, {
+    await request<void>(`${this.baseUrl}${API_ENDPOINTS.auth.signUp}`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        full_name: data.fullname || null,
+        first_name: data.firstname || null,
+        last_name: data.lastname || null,
+        username: data.username,
+        email: data.email,
+        phone_number: data.phone_number || null,
+        password: data.password,
+        confirm_password: data.confirm_password,
+        agree_terms: true, // sign-up page blocks submit until the checkbox is ticked
+      }),
     });
   }
 
@@ -222,12 +290,24 @@ export class AuthApiDataSource {
     return raw?.data ?? raw;
   }
 
+  /** POST /user — CreateRequest (role is not accepted; backend creates USER). */
   async createUser(data: RegisterRequestDto): Promise<UserResponseDto> {
     const raw = await request<any>(`${this.baseUrl}${API_ENDPOINTS.users.create}`, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        first_name: data.firstname,
+        last_name: data.lastname,
+        preferred_name: data.fullname || null,
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        phone: data.phone_number || null,
+        mobile_number: data.mobile_number || null,
+        line_id: data.line_id || null,
+        location_id: data.location_id || null,
+      }),
     });
-    return raw?.data ?? raw;
+    return toUserDto(raw);
   }
 
   async updateUser(id: string, data: Partial<UserResponseDto>): Promise<UserResponseDto> {

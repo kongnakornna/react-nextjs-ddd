@@ -2,9 +2,9 @@ export const environment = {
   production: process.env.NODE_ENV === 'production',
   demo: process.env.NEXT_PUBLIC_DEMO === 'true',
   useProxy: process.env.NEXT_PUBLIC_USE_PROXY !== 'false',
-  apiTargetUrl: process.env.NEXT_PUBLIC_API_TARGET_URL || 'http://localhost:5000',
+  apiTargetUrl: process.env.NEXT_PUBLIC_API_TARGET_URL || 'http://localhost:8000',
   apiEndpoints: [
-    { url: process.env.NEXT_PUBLIC_API_PRIMARY || 'http://localhost:5000', name: 'Primary', priority: 1 },
+    { url: process.env.NEXT_PUBLIC_API_PRIMARY || 'http://localhost:8000', name: 'Primary', priority: 1 },
   ],
   apiFallback: {
     enabled: process.env.NEXT_PUBLIC_API_FALLBACK === 'true',
