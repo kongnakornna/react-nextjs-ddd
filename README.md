@@ -2,9 +2,11 @@
 
 **React Clean Architecture + Next.js App Router + Tabler UI (SCSS) + Tailwind CSS + shadcn/ui**
 
- (Angular 21 + Tabler UI) to React 18 + Next.js 14 with strict Clean Architecture boundaries.
+(Angular 21 + Tabler UI) to React 18 + Next.js 14 with strict Clean Architecture boundaries.
 
 ---
+
+![alt text](clean-architecture-diagram.jpg)
 
 ## 1. Architecture
 
@@ -1126,3 +1128,11 @@ mkdir -p src/features/{name}/presentation/pages
 | [docs/module-map.md](./docs/module-map.md) | Module dependency map |
 | [docs/migration-report.md](./docs/migration-report.md) | รายงาน migration จาก Angular |
 | [docs/theme-guide.md](./docs/theme-guide.md) | คู่มือ theme + dark mode |
+
+---
+
+![alt text](login.png)
+
+![alt text](iot.png)
+
+![alt text](smarthome.png)
