@@ -77,51 +77,80 @@ function getBaseUrl(): string {
 
 ---
 
-## 3. หน้า `/sign-in`: URL จริงคือ Next route (ไม่ไป backend)
+## 3. หน้า `/sign-in` → login ของ backend
 
 ```ts
 // app/(auth)/sign-in/page.tsx
-const response = await fetch('/api/auth/sign-in', { method: 'POST', body: JSON.stringify({ username, password }) });
+const authApi = new AuthApiDataSource();
+await authApi.login({ username, password }); // POST /api/v1/authentication/login
+router.push('/dashboard');
 ```
 
-URL จริงคือ **`http://localhost:1003/api/auth/sign-in`** — Next.js ตอบเอง ไม่ถึง `:8000`
+URL จริงคือ **`http://localhost:1003/api/v1/authentication/login`** → Next proxy → **`http://localhost:8000/api/v1/authentication/login`**
 
 ```mermaid
 sequenceDiagram
   autonumber
   participant UI as sign-in/page.tsx
+  participant DS as AuthApiDataSource
   participant NX as Next :1003
-  participant RT as app/api/auth/sign-in/route.ts
-  participant DI as di/container
-  participant FS as in-file-users.local.json
+  participant BE as FastAPI :8000
 
-  UI->>NX: POST /api/auth/sign-in (JSON { username, password })
-  Note over NX: middleware ข้าม /api/*<br/>เจอไฟล์ route.ts → ไม่ใช้ rewrite afterFiles
-  NX->>RT: POST(request)
-  RT->>DI: getInjection('ISignInApiController')
-  DI->>FS: use case → repository (PERSISTENCE=in-file)
-  FS-->>DI: user / ผิดพลาด
-  DI-->>RT: { status, body, init, cookie }
-  RT-->>UI: 200 { success: true } + Set-Cookie SESSION_COOKIE<br/>หรือ 400/401 { error }
+  UI->>DS: login({ username, password })
+  DS->>NX: POST /api/v1/authentication/login<br/>x-www-form-urlencoded (grant_type=password)
+  Note over NX: middleware ข้าม /api/*<br/>ไม่มี app/api/v1/... → rewrite afterFiles
+  NX->>BE: :8000/api/v1/authentication/login
+  BE-->>UI: 200 envelope + Set-Cookie access_token, refresh_token<br/>หรือ 401 { details.data.errors_th }
   UI->>NX: router.push('/dashboard')
-  Note over NX: middleware ตรวจ SESSION_COOKIE → ผ่าน
+  Note over NX: middleware ตรวจ cookie access_token / refresh_token → ผ่าน
 ```
 
-1. `fetch('/api/auth/sign-in')` เป็น path แบบ relative → browser เติม origin ของหน้า → `http://localhost:1003/api/auth/sign-in`
-2. `middleware.ts` matcher ข้าม `api` จึงไม่ตรวจอะไร
-3. มีไฟล์ `app/api/auth/sign-in/route.ts` → Next ใช้ route นี้ก่อน กฎ proxy (`afterFiles`) ใช้เฉพาะเมื่อ**ไม่มี**ไฟล์ตรงกัน
-4. route เรียก `ISignInApiController` จาก `di/container` → repository แบบ in-file → ตั้ง `SESSION_COOKIE` ที่ `middleware.ts` ใช้ตรวจ
+- ผิดพลาด → แสดง `errors_th` จาก backend เช่น "ข้อมูลเข้าสู่ระบบไม่ถูกต้อง"
+- ช่อง "username" ส่งเป็น `username` ซึ่ง backend รับได้ทั้ง username และ email
 
-ตรวจด้วย request จริง: `POST localhost:1003/api/auth/sign-in` ได้ `400 {"error":"Invalid data"}` พร้อม header `vary: RSC, Next-Router-State-Tree` = รูปแบบของ Next route (FastAPI จะตอบเป็น envelope `{ code, details: {...} }`)
+ตรวจด้วย browser จริง (Edge, profile ใหม่): กรอกรหัสผิด → `POST /api/v1/authentication/login [application/x-www-form-urlencoded]` → `401` → แสดง "ข้อมูลเข้าสู่ระบบไม่ถูกต้อง" และอยู่หน้า `/sign-in`
 
-### เทียบกับ login ของ backend
+### middleware ตรวจอะไร
+
+```ts
+// middleware.ts
+const hasBackendSession =
+  request.cookies.has('access_token') || request.cookies.has('refresh_token');
+const hasLocalSession = request.cookies.has(SESSION_COOKIE); // 'auth_session'
+if (!hasBackendSession && !hasLocalSession) redirect('/sign-in');
+```
+
+- ตรวจแค่ว่า**มี** cookie — ไม่ถอด token (เป็น JWE) backend ตรวจ token จริงทุกครั้งที่เรียก API
+- นับ `refresh_token` ด้วย เพราะ access token อายุ 15 นาที แต่ cookie อยู่ได้ 1 วัน (`COOKIES_MAX_AGE_SECONDS=86400`)
+- `SESSION_COOKIE` ยังรองรับ เพราะหน้า todos (`app/(home)`) และ `/api/todos` ยังใช้ session ของ Next
+
+### Logout
+
+```mermaid
+sequenceDiagram
+  participant UI as UserNav / UserMenu
+  participant SA as signOutAction (server)
+  participant BE as FastAPI :8000
+
+  UI->>SA: signOutAction()
+  SA->>BE: DELETE /api/v1/authentication/logout<br/>Cookie: access_token=…; refresh_token=…
+  BE-->>SA: ยกเลิก session
+  SA->>SA: ลบ cookie access_token, refresh_token, token_type, hub_device
+  SA->>SA: ถ้ามี SESSION_COOKIE → sign-out ของ Next ด้วย
+  SA-->>UI: redirect /sign-in
+```
+
+- server action เรียก backend ตรงที่ `API_TARGET_URL` (ไม่ผ่าน proxy) และส่ง cookie ของ browser ไปเอง
+- ถ้า backend ล่มหรือเรียกไม่ได้ ยังลบ cookie และ logout ได้
+
+### Route `/api/auth/sign-in` เดิม
+
+ยังมีอยู่ที่ `app/api/auth/sign-in/route.ts` (Next ตอบเอง, in-file, ตั้ง `SESSION_COOKIE`) แต่หน้า `/sign-in` ไม่เรียกแล้ว
 
 | | URL | Body | ข้อมูลผู้ใช้จาก | Cookie |
 |---|---|---|---|---|
-| หน้า `/sign-in` ตอนนี้ | `POST localhost:1003/api/auth/sign-in` | JSON `{ username, password }` | in-file (Next) | `SESSION_COOKIE` |
-| Login ของ backend | `POST localhost:1003/api/v1/authentication/login` → proxy → `localhost:8000/api/v1/authentication/login` | form-urlencoded `grant_type=password&username&password` | FastAPI (Postgres) | `access_token`, `refresh_token` |
-
-ผู้ใช้ที่ login ผ่านหน้า `/sign-in` ได้ตอนนี้ คือผู้ใช้ใน in-file ของ Next **ไม่ใช่**ผู้ใช้ในฐานข้อมูล backend
+| หน้า `/sign-in` (ปัจจุบัน) | `POST localhost:1003/api/v1/authentication/login` → proxy → `:8000` | form-urlencoded `grant_type=password&username&password` | FastAPI (Postgres) | `access_token`, `refresh_token` |
+| route เดิม (ไม่ได้ใช้จากหน้าเว็บ) | `POST localhost:1003/api/auth/sign-in` | JSON `{ username, password }` | in-file (Next) | `SESSION_COOKIE` |
 
 ---
 
@@ -250,8 +279,9 @@ flowchart LR
 
 | ใช้ทำอะไร | เรียก | ไปที่ | สถานะ |
 |---|---|---|---|
-| หน้า `/sign-in` | `POST /api/auth/sign-in` (= `localhost:1003/api/auth/sign-in`) | Next route → in-file | local (ดูหัวข้อ 3) |
-| Login | `POST /api/v1/authentication/login` | FastAPI | ✅ มีใน backend |
+| Login (หน้า `/sign-in`) | `POST /api/v1/authentication/login` | FastAPI | ✅ มีใน backend (ดูหัวข้อ 3) |
+| Logout (`signOutAction`) | `DELETE /api/v1/authentication/logout` | FastAPI | ✅ มีใน backend |
+| Todos demo (`app/(home)`) | `/api/auth/sign-in`, `/api/todos` | Next route → in-file | local — ใช้ `SESSION_COOKIE` |
 | สมัครสมาชิก (หน้า `/sign-up`) | `POST /api/v1/authentication/sign-up` | FastAPI | ✅ มีใน backend |
 | Logout | `DELETE /api/v1/authentication/logout` | FastAPI | ✅ มีใน backend |
 | Refresh token | `PATCH /api/v1/authentication/refresh` | FastAPI | ✅ มีใน backend |
@@ -282,7 +312,7 @@ NEXT_PUBLIC_API_PRIMARY=http://localhost:8000     # ยังไม่ถูก�
 
 ## 8. ยังไม่เชื่อมกัน
 
-- หน้า `/sign-in` ยัง login กับ Next route (in-file) และ `middleware.ts` ตรวจแค่ `SESSION_COOKIE`
-- หน้า `/sign-up` และ `AuthApiDataSource` ใช้ backend ที่ตั้ง cookie `access_token`
-- ถ้าจะใช้ backend อย่างเดียว ต้องเปลี่ยนหน้า sign-in ให้เรียก `AuthApiDataSource.login()` และให้ middleware ตรวจ `access_token`
+- **Refresh token อัตโนมัติยังไม่มี**: access token หมดใน 15 นาที แล้ว API จะตอบ 401 ต้องเพิ่มการเรียก `PATCH /api/v1/authentication/refresh` เมื่อได้ 401 แล้วลองใหม่
+- **หน้า todos demo** (`app/(home)`, `/api/todos`) ยังใช้ `SESSION_COOKIE` ของ Next — ผู้ใช้ที่ login ผ่าน backend จะไม่มี session นี้
+- **e2e test** `tests/e2e/app/(auth)/sign-in.test.ts` ยังอ้าง `data-testid` และ server action แบบเดิม (ไม่ตรงกับหน้าปัจจุบันตั้งแต่ก่อนเปลี่ยน)
 - หน้า user list / edit / profile / role-list เรียก `/api/users`, `/api/roles` ซึ่ง backend ยังไม่มี
